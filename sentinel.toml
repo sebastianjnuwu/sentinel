@@ -1,0 +1,9 @@
+# Sentinel configuration
+# Packages to ignore from outdated reports
+ignore_packages = []
+
+# Extra directories to skip during recursive discovery
+ignore_dirs = ["target", "assets"]
+
+# Copyleft or restricted licenses to flag
+deny_licenses = ["GPL", "AGPL"]
