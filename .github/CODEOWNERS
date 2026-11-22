@@ -1,10 +1,10 @@
-# CODEOWNERS — define quem precisa aprovar PRs.
-# O último padrão que casa é o que vale.
+# CODEOWNERS — defines who must approve pull requests.
+# The last matching pattern wins.
 #
-# Dono padrão: mantenedor do projeto.
+# Default owner: project maintainer.
 * @sebastianjnuwu
 
-# Áreas sensíveis: CI/release, código-fonte e configuração de segurança.
+# Sensitive areas: CI/release, source code and security configuration.
 /.github/            @sebastianjnuwu
 /src/                @sebastianjnuwu
 /Cargo.toml          @sebastianjnuwu
