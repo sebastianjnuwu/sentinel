@@ -1,0 +1,11 @@
+# CODEOWNERS — define quem precisa aprovar PRs.
+# O último padrão que casa é o que vale.
+#
+# Dono padrão: mantenedor do projeto.
+* @sebastianjnuwu
+
+# Áreas sensíveis: CI/release, código-fonte e configuração de segurança.
+/.github/            @sebastianjnuwu
+/src/                @sebastianjnuwu
+/Cargo.toml          @sebastianjnuwu
+/Cargo.lock          @sebastianjnuwu
