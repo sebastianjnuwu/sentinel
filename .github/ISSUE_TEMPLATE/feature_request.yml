@@ -1,0 +1,51 @@
+name: Feature request
+description: Suggest an improvement or a new capability for Sentinel
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea! Please check existing issues and the audit index in #5 first.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem are you trying to solve?
+      placeholder: I need to ...
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: How should Sentinel behave? Include CLI flags or output examples if relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - CLI / flags
+        - Lockfiles / parsers
+        - Collectors / ecosystems
+        - OSV / CVE data
+        - Output (table, JSON, SARIF)
+        - Configuration
+        - CI / release
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and this is not a duplicate
+          required: true
