@@ -68,6 +68,14 @@
 
 ## 📦 Installation
 
+### From crates.io
+
+The crate is published as **`sentinel-scan`**; the installed binary is **`sentinel`**:
+
+```bash
+cargo install sentinel-scan
+```
+
 ### From Source (Cargo)
 
 Requires [Rust](https://rustup.rs/) (Edition 2024):

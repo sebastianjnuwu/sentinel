@@ -2,6 +2,12 @@
 
 All notable changes to **Sentinel** will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+- crates.io package renamed to `sentinel-scan` (the binary remains `sentinel`).
+- Added crates.io metadata: description, repository, homepage, docs, keywords, categories and MSRV.
+
 ## [1.0.0] - 2026-11-22
 
 ### Added

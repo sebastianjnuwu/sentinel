@@ -1,8 +1,21 @@
 [package]
-name = "sentinel"
+name = "sentinel-scan"
 version = "1.0.0"
 edition = "2024"
+rust-version = "1.85"
 license = "Apache-2.0"
+description = "Fast, cross-platform Rust CLI for multi-ecosystem dependency, license, and OSV vulnerability scanning."
+repository = "https://github.com/sebastianjnuwu/sentinel"
+homepage = "https://github.com/sebastianjnuwu/sentinel"
+documentation = "https://docs.rs/sentinel-scan"
+readme = "README.md"
+authors = ["sebastianjnuwu"]
+keywords = ["security", "vulnerability", "osv", "dependencies", "cli"]
+categories = ["command-line-utilities", "development-tools"]
+
+[[bin]]
+name = "sentinel"
+path = "src/main.rs"
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
