@@ -162,7 +162,7 @@ Use Sentinel as a fast security gate in GitHub Actions and upload findings direc
 
 - name: Upload SARIF to GitHub Security
   if: always()
-  uses: github/codeql-action/upload-sarif@v3
+  uses: github/codeql-action/upload-sarif@v4
   with:
     sarif_file: sentinel.sarif
 ```
