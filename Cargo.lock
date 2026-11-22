@@ -320,7 +320,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "sentinel"
+name = "sentinel-scan"
 version = "1.0.0"
 dependencies = [
  "serde",
