@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/sebastianjnuwu/sentinel/security/advisories/new
+    about: Report security issues privately. Do not open a public issue.
+  - name: Documentation and usage
+    url: https://github.com/sebastianjnuwu/sentinel#readme
+    about: Read the README for installation, usage, flags and CI examples.
