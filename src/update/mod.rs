@@ -1,10 +1,19 @@
 mod install;
+mod verify;
 
 use crate::version::{clean_ver, is_newer};
 use std::{io::{self, Write}, time::Duration};
 use ureq::Agent;
 
 const LATEST_URL: &str = "https://github.com/sebastianjnuwu/sentinel/releases/latest";
+
+pub fn cleanup_old_exe() {
+    #[cfg(target_os = "windows")]
+    if let Ok(exe) = std::env::current_exe() {
+        let old = exe.with_file_name("sentinel.old.exe");
+        if old.exists() { let _ = std::fs::remove_file(old); }
+    }
+}
 
 fn resolve_latest_tag() -> Result<String, String> {
     let agent: Agent = Agent::config_builder().max_redirects(0).timeout_global(Some(Duration::from_secs(10))).build().into();
@@ -16,9 +25,7 @@ fn resolve_latest_tag() -> Result<String, String> {
 
 pub fn fetch_latest_tag() -> Option<String> {
     let key = "self:latest";
-    if let Some((tag, _)) = crate::cache::get(key) {
-        return (!tag.is_empty()).then_some(tag);
-    }
+    if let Some((tag, _)) = crate::cache::get(key) { return (!tag.is_empty()).then_some(tag); }
     let tag = resolve_latest_tag().ok()?;
     crate::cache::set(key.into(), tag.clone(), String::new());
     Some(tag)
@@ -43,14 +50,8 @@ fn confirm(cur: &str, lat: &str) -> bool {
 pub fn run_self_update() -> Result<(), String> {
     let tag = resolve_latest_tag()?;
     let (cur, lat) = (env!("CARGO_PKG_VERSION"), clean_ver(&tag));
-    if !is_newer(cur, &lat) {
-        println!("✅ Sentinel is already up to date (v{cur}).");
-        return Ok(());
-    }
-    if !confirm(cur, &lat) {
-        println!("Update cancelled.");
-        return Ok(());
-    }
+    if !is_newer(cur, &lat) { println!("✅ Sentinel is already up to date (v{cur})."); return Ok(()); }
+    if !confirm(cur, &lat) { println!("Update cancelled."); return Ok(()); }
     println!("⬇️  Updating Sentinel v{cur} → v{lat}...");
     install::install_from_release(&tag, &lat)?;
     println!("✅ Sentinel updated to v{lat}.");

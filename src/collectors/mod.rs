@@ -14,8 +14,7 @@ pub mod swift;
 pub mod terraform;
 
 use crate::discover::has_extension;
-use crate::lockfiles::LockEntry;
-use crate::types::OutdatedPkg;
+use crate::types::{LockEntry, OutdatedPkg, ProjectScan};
 use std::path::Path;
 
 pub fn project_label(root: &Path, dir: &Path) -> String {
@@ -26,29 +25,34 @@ pub fn project_label(root: &Path, dir: &Path) -> String {
         .unwrap_or_else(|| dir.file_name().and_then(|n| n.to_str()).unwrap_or(".").to_string())
 }
 
-fn push_pair(items: &mut Vec<OutdatedPkg>, direct: &mut Vec<LockEntry>, res: (Vec<OutdatedPkg>, Vec<LockEntry>)) {
-    items.extend(res.0);
-    direct.extend(res.1);
+fn push_pair(s: &mut ProjectScan, (o, d): (Vec<OutdatedPkg>, Vec<LockEntry>)) {
+    s.outdated.extend(o);
+    s.direct.extend(d);
 }
 
-pub fn scan_project(root: &Path, dir: &Path) -> (Option<(String, Vec<OutdatedPkg>)>, Vec<LockEntry>) {
-    let (mut items, mut direct) = (Vec::new(), Vec::new());
-    if dir.join("package.json").exists() { push_pair(&mut items, &mut direct, node::collect(dir)); }
-    if dir.join("go.mod").exists() { items.extend(go::collect(dir)); }
-    if dir.join("Cargo.toml").exists() { push_pair(&mut items, &mut direct, rust::collect(dir)); }
-    if dir.join("pyproject.toml").exists() || dir.join("requirements.txt").exists() { push_pair(&mut items, &mut direct, python::collect(dir)); }
-    if dir.join("composer.json").exists() { items.extend(php::collect(dir)); }
-    if has_extension(dir, "csproj") || has_extension(dir, "fsproj") { items.extend(dotnet::collect(dir)); }
-    if dir.join("pom.xml").exists() || dir.join("build.gradle").exists() || dir.join("build.gradle.kts").exists() { push_pair(&mut items, &mut direct, java::collect(dir)); }
-    if dir.join("Gemfile").exists() { push_pair(&mut items, &mut direct, ruby::collect(dir)); }
-    if dir.join("pubspec.yaml").exists() { push_pair(&mut items, &mut direct, dart::collect(dir)); }
-    if dir.join("mix.exs").exists() { push_pair(&mut items, &mut direct, elixir::collect(dir)); }
-    if dir.join("Package.resolved").exists() { push_pair(&mut items, &mut direct, swift::collect(dir)); }
-    if dir.join(".terraform.lock.hcl").exists() { items.extend(terraform::collect(dir)); }
-    if dir.join("Dockerfile").exists() || dir.join("docker-compose.yml").exists() || dir.join("docker-compose.yaml").exists() { items.extend(docker::collect(dir)); }
-    if dir.join(".github").join("workflows").exists() { push_pair(&mut items, &mut direct, gha::collect(dir)); }
-    direct.retain(|(_, n, v)| !items.iter().any(|p| p.name == *n && p.current == *v));
-    if items.is_empty() { return (None, direct); }
-    items.sort_by(|a, b| a.name.cmp(&b.name));
-    (Some((project_label(root, dir), items)), direct)
+fn push_scan(s: &mut ProjectScan, res: ProjectScan) {
+    s.outdated.extend(res.outdated);
+    s.direct.extend(res.direct);
+    s.licenses.extend(res.licenses);
+}
+
+pub fn scan_project(dir: &Path) -> ProjectScan {
+    let mut s = ProjectScan::default();
+    if dir.join("package.json").exists() { push_scan(&mut s, node::collect(dir)); }
+    if dir.join("go.mod").exists() { s.outdated.extend(go::collect(dir)); }
+    if dir.join("Cargo.toml").exists() { push_scan(&mut s, rust::collect(dir)); }
+    if dir.join("pyproject.toml").exists() || dir.join("requirements.txt").exists() { push_scan(&mut s, python::collect(dir)); }
+    if dir.join("composer.json").exists() { s.outdated.extend(php::collect(dir)); }
+    if has_extension(dir, "csproj") || has_extension(dir, "fsproj") { s.outdated.extend(dotnet::collect(dir)); }
+    if dir.join("pom.xml").exists() || dir.join("build.gradle").exists() || dir.join("build.gradle.kts").exists() { push_pair(&mut s, java::collect(dir)); }
+    if dir.join("Gemfile").exists() { push_scan(&mut s, ruby::collect(dir)); }
+    if dir.join("pubspec.yaml").exists() { push_pair(&mut s, dart::collect(dir)); }
+    if dir.join("mix.exs").exists() { push_scan(&mut s, elixir::collect(dir)); }
+    if dir.join("Package.resolved").exists() { push_pair(&mut s, swift::collect(dir)); }
+    if dir.join(".terraform.lock.hcl").exists() { s.outdated.extend(terraform::collect(dir)); }
+    if dir.join("Dockerfile").exists() || dir.join("docker-compose.yml").exists() || dir.join("docker-compose.yaml").exists() { s.outdated.extend(docker::collect(dir)); }
+    if dir.join(".github").join("workflows").exists() { push_pair(&mut s, gha::collect(dir)); }
+    s.direct.retain(|(_, n, v)| !s.outdated.iter().any(|p| p.name == *n && p.current == *v));
+    s.outdated.sort_by(|a, b| a.name.cmp(&b.name));
+    s
 }

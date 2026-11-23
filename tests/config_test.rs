@@ -36,7 +36,14 @@ fn ignore_dirs_skips_nested_project() {
 fn deny_licenses_gpl_does_not_block_lgpl_or_mit() {
     let tmp = TempDir::new("cfg-lic");
     tmp.write("sentinel.toml", "deny_licenses = ['GPL']\n");
-    tmp.write("package.json", r#"{"name":"t","dependencies":{"left-pad":"1.0.0"}}"#);
+    tmp.write("package.json", r#"{"name":"t","dependencies":{"left-pad":"1.3.0"}}"#);
     let out = run(&["--json", tmp.s()]);
     assert!(out.status.success());
+
+    let blocked = TempDir::new("cfg-lic-mit");
+    blocked.write("sentinel.toml", "deny_licenses = ['MIT']\n");
+    blocked.write("package.json", r#"{"name":"t","dependencies":{"ms":"2.1.3"}}"#);
+    let out2 = run(&["--json", blocked.s()]);
+    assert_eq!(out2.status.code(), Some(1));
+    assert!(String::from_utf8_lossy(&out2.stderr).contains("denied license"));
 }

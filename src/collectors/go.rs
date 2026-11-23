@@ -1,15 +1,15 @@
 use crate::types::OutdatedPkg;
 use crate::version::{classify_update, clean_ver, is_newer};
 use serde_json::Value;
-use std::{collections::HashMap, fs, path::Path};
+use std::{fs, path::Path};
 
 fn escape_mod(m: &str) -> String {
     m.chars().flat_map(|c| if c.is_ascii_uppercase() { vec!['!', c.to_ascii_lowercase()] } else { vec![c] }).collect()
 }
 
-fn parse_go_direct(dir: &Path) -> Vec<(String, String)> {
+pub fn parse_go_direct(dir: &Path) -> Vec<(String, String)> {
     let Ok(text) = fs::read_to_string(dir.join("go.mod")) else { return Vec::new() };
-    let (mut reqs, mut reps, mut mode) = (Vec::new(), HashMap::new(), "");
+    let (mut reqs, mut reps, mut mode) = (Vec::new(), Vec::new(), "");
     for line in text.lines() {
         let indirect = line.contains("// indirect");
         let t = line.split("//").next().unwrap_or("").trim();
@@ -18,21 +18,21 @@ fn parse_go_direct(dir: &Path) -> Vec<(String, String)> {
         if t.starts_with("require (") { mode = "req"; continue; }
         if t.starts_with("replace (") { mode = "rep"; continue; }
         if t.starts_with("replace ") || mode == "rep" {
-            if let Some((l, r)) = t.strip_prefix("replace ").unwrap_or(t).split_once("=>")
-                && let (Some(om), Some(nm)) = (l.split_whitespace().next(), r.split_whitespace().next())
-            {
-                let nv = r.split_whitespace().nth(1).map(clean_ver).unwrap_or_default();
-                reps.insert(om.to_string(), (nm.to_string(), nv));
+            if let Some((l, r)) = t.strip_prefix("replace ").unwrap_or(t).split_once("=>") {
+                let (mut lp, mut rp) = (l.split_whitespace(), r.split_whitespace());
+                if let (Some(om), Some(nm)) = (lp.next(), rp.next()) {
+                    reps.push((om.to_string(), lp.next().map(clean_ver), nm.to_string(), rp.next().map(clean_ver).unwrap_or_default()));
+                }
             }
         } else if !indirect && (t.starts_with("require ") || mode == "req") {
             let mut p = t.strip_prefix("require ").unwrap_or(t).split_whitespace();
             if let (Some(m), Some(v)) = (p.next(), p.next()) { reqs.push((m.to_string(), clean_ver(v))); }
         }
     }
-    reqs.into_iter().filter_map(|(m, v)| match reps.get(&m) {
-        Some((nm, _)) if nm.starts_with('.') || nm.starts_with('/') => None,
-        Some((nm, nv)) if !nv.is_empty() => Some((nm.clone(), nv.clone())),
-        Some((nm, _)) => Some((nm.clone(), v)),
+    reqs.into_iter().filter_map(|(m, v)| match reps.iter().find(|(om, ov, _, _)| om == &m && ov.as_deref().is_none_or(|x| x == v)) {
+        Some((_, _, nm, _)) if nm.starts_with('.') || nm.starts_with('/') => None,
+        Some((_, _, nm, nv)) if !nv.is_empty() => Some((nm.clone(), nv.clone())),
+        Some((_, _, nm, _)) => Some((nm.clone(), v)),
         None => Some((m, v)),
     }).collect()
 }
@@ -53,4 +53,18 @@ pub fn collect(dir: &Path) -> Vec<OutdatedPkg> {
             current: current.clone(), latest, license: "-".into(), cves: Vec::new(),
         })
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn respects_version_pinned_replace() {
+        let dir = std::env::temp_dir().join(format!("sentinel-go-{}", std::process::id()));
+        let _ = fs::create_dir_all(&dir);
+        let _ = fs::write(dir.join("go.mod"), "module t\nrequire example.com/a v2.0.0\nreplace example.com/a v1.0.0 => ./local\n");
+        let deps = parse_go_direct(&dir);
+        let _ = fs::remove_dir_all(&dir);
+        assert_eq!(deps, vec![("example.com/a".into(), "2.0.0".into())]);
+    }
 }

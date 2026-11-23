@@ -1,5 +1,5 @@
-use crate::lockfiles::{LockEntry, locked_versions, resolve_ver};
-use crate::types::OutdatedPkg;
+use crate::lockfiles::{locked_versions, resolve_ver};
+use crate::types::{OutdatedPkg, ProjectScan};
 use crate::version::{classify_update, clean_ver, is_newer};
 use serde_json::Value;
 use std::{fs, path::Path};
@@ -23,10 +23,10 @@ fn parse_gemfile(dir: &Path) -> Vec<(String, String)> {
     out
 }
 
-pub fn collect(dir: &Path) -> (Vec<OutdatedPkg>, Vec<LockEntry>) {
+pub fn collect(dir: &Path) -> ProjectScan {
     let gems = parse_gemfile(dir);
     let direct = gems.iter().map(|(n, v)| ("RubyGems", n.clone(), v.clone())).collect();
-    let out = crate::pool::map_bounded(&gems, |(name, cur)| {
+    let pairs = crate::pool::map_bounded(&gems, |(name, cur)| {
         let key = format!("ruby:{name}");
         let (latest, license) = if let Some(hit) = crate::cache::get(&key) { hit } else {
             let data: Value = crate::http::agent().get(&format!("https://rubygems.org/api/v1/gems/{name}.json")).call().ok()?.into_body().read_json().ok()?;
@@ -35,10 +35,13 @@ pub fn collect(dir: &Path) -> (Vec<OutdatedPkg>, Vec<LockEntry>) {
             crate::cache::set(key, lat.clone(), lic.clone());
             (lat, lic)
         };
-        is_newer(cur, &latest).then(|| OutdatedPkg {
+        let item = is_newer(cur, &latest).then(|| OutdatedPkg {
             manager: "bundler".into(), name: name.clone(), kind: classify_update(cur, &latest),
-            current: cur.clone(), latest, license, cves: Vec::new(),
-        })
+            current: cur.clone(), latest, license: license.clone(), cves: Vec::new(),
+        });
+        Some((item, (name.clone(), license)))
     });
-    (out, direct)
+    let (mut outdated, mut licenses) = (Vec::new(), Vec::new());
+    for (o, l) in pairs { if let Some(p) = o { outdated.push(p); } licenses.push(l); }
+    ProjectScan { outdated, direct, licenses }
 }

@@ -48,8 +48,9 @@ fn gha_vulnerable_action_fails_cve_gate() {
     let out = run(&["--fail-on-cve", "--json", tmp.s()]);
     assert_eq!(out.status.code(), Some(1));
     let v = json(&out);
-    let cves = v["outdated"].as_object().unwrap().values().next().unwrap()[0]["cves"].as_array().unwrap();
-    assert!(!cves.is_empty());
+    let in_out = v["outdated"].as_object().and_then(|m| m.values().next()).and_then(|a| a[0]["cves"].as_array()).is_some_and(|c| !c.is_empty());
+    let in_lock = v["lockfile_vulnerabilities"].as_object().and_then(|m| m.values().next()).and_then(|a| a[0]["ids"].as_array()).is_some_and(|c| !c.is_empty());
+    assert!(in_out || in_lock);
 }
 
 #[test]

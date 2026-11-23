@@ -26,6 +26,9 @@ pub fn query_batch(queries: &[(String, String, String)]) -> Result<Vec<Vec<Strin
             .collect();
         let data = post_osv("https://api.osv.dev/v1/querybatch", &json!({ "queries": payload }))?;
         let results = data.get("results").and_then(Value::as_array).ok_or("OSV missing results")?;
+        if results.len() != chunk.len() {
+            return Err(format!("OSV returned {} results for {} queries", results.len(), chunk.len()));
+        }
         for res in results {
             let ids = res.get("vulns").and_then(Value::as_array)
                 .map(|a| a.iter().filter_map(|v| v.get("id").and_then(Value::as_str).map(String::from)).collect())

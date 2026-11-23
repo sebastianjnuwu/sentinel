@@ -1,5 +1,5 @@
-use crate::lockfiles::{LockEntry, locked_versions, resolve_ver};
-use crate::types::OutdatedPkg;
+use crate::lockfiles::{locked_versions, resolve_ver};
+use crate::types::{OutdatedPkg, ProjectScan};
 use crate::version::{classify_update, clean_ver, is_newer};
 use serde_json::Value;
 use std::{fs, path::Path};
@@ -13,18 +13,17 @@ fn parse_mix(dir: &Path) -> Vec<(String, String)> {
         if let Some(rest) = t.strip_prefix("{:") {
             let Some((name, after)) = rest.split_once(',') else { continue };
             let Some(ver) = after.split('"').nth(1) else { continue };
-            let cur = clean_ver(ver);
-            let n = name.trim();
+            let (cur, n) = (clean_ver(ver), name.trim());
             if !cur.is_empty() { out.push((n.to_string(), resolve_ver(&locked, n, &cur))); }
         }
     }
     out
 }
 
-pub fn collect(dir: &Path) -> (Vec<OutdatedPkg>, Vec<LockEntry>) {
+pub fn collect(dir: &Path) -> ProjectScan {
     let deps = parse_mix(dir);
     let direct = deps.iter().map(|(n, v)| ("Hex", n.clone(), v.clone())).collect();
-    let out = crate::pool::map_bounded(&deps, |(name, cur)| {
+    let pairs = crate::pool::map_bounded(&deps, |(name, cur)| {
         let key = format!("hex:{name}");
         let (latest, license) = if let Some(hit) = crate::cache::get(&key) { hit } else {
             let data: Value = crate::http::agent().get(&format!("https://hex.pm/api/packages/{name}"))
@@ -34,10 +33,13 @@ pub fn collect(dir: &Path) -> (Vec<OutdatedPkg>, Vec<LockEntry>) {
             crate::cache::set(key, lat.clone(), lic.clone());
             (lat, lic)
         };
-        is_newer(cur, &latest).then(|| OutdatedPkg {
+        let item = is_newer(cur, &latest).then(|| OutdatedPkg {
             manager: "hex".into(), name: name.clone(), kind: classify_update(cur, &latest),
-            current: cur.clone(), latest, license, cves: Vec::new(),
-        })
+            current: cur.clone(), latest, license: license.clone(), cves: Vec::new(),
+        });
+        Some((item, (name.clone(), license)))
     });
-    (out, direct)
+    let (mut outdated, mut licenses) = (Vec::new(), Vec::new());
+    for (o, l) in pairs { if let Some(p) = o { outdated.push(p); } licenses.push(l); }
+    ProjectScan { outdated, direct, licenses }
 }

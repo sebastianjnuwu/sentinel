@@ -17,7 +17,9 @@ fn asset_name() -> Option<&'static str> {
 
 fn extract_archive(archive: &Path, dest: &Path, is_zip: bool) -> Result<(), String> {
     let ok = if is_zip {
-        Command::new("powershell").args(["-NoProfile", "-Command", &format!("Expand-Archive -Path '{}' -DestinationPath '{}' -Force", archive.display(), dest.display())]).status()
+        Command::new("powershell")
+            .args(["-NoProfile", "-Command", "Expand-Archive -LiteralPath $env:SRC -DestinationPath $env:DST -Force"])
+            .env("SRC", archive).env("DST", dest).status()
     } else {
         Command::new("tar").args(["-xzf", &archive.to_string_lossy(), "-C", &dest.to_string_lossy()]).status()
     }.map_err(|e| format!("extract failed: {e}"))?.success();
@@ -52,9 +54,11 @@ pub(super) fn install_from_release(tag: &str, lat: &str) -> Result<(), String> {
     let mut resp = crate::http::agent().get(&url).header("User-Agent", crate::http::user_agent()).call().map_err(|e| format!("download failed: {e}"))?;
     let mut file = fs::File::create(&archive).map_err(|e| format!("create archive failed: {e}"))?;
     io::copy(&mut resp.body_mut().as_reader(), &mut file).map_err(|e| format!("write archive failed: {e}"))?;
-    extract_archive(&archive, &dir, name.ends_with(".zip"))?;
-    let exe = env::current_exe().map_err(|e| format!("current_exe failed: {e}"))?;
-    let res = replace_exe(&dir.join(if cfg!(windows) { "sentinel.exe" } else { "sentinel" }), &exe);
+    let res = super::verify::verify_checksum(tag, name, &archive).and_then(|()| {
+        extract_archive(&archive, &dir, name.ends_with(".zip"))?;
+        let exe = env::current_exe().map_err(|e| format!("current_exe failed: {e}"))?;
+        replace_exe(&dir.join(if cfg!(windows) { "sentinel.exe" } else { "sentinel" }), &exe)
+    });
     let _ = fs::remove_dir_all(&dir);
     res
 }

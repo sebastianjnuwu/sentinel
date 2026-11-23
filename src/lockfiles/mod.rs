@@ -5,10 +5,9 @@ pub mod npm;
 #[cfg(test)] mod tests;
 pub mod toml_locks;
 
+pub use crate::types::LockEntry;
 use crate::types::TransitiveVuln;
 use std::{collections::{BTreeMap, HashMap, HashSet}, path::Path};
-
-pub type LockEntry = (&'static str, String, String);
 
 pub fn collect_lock_entries(dir: &Path) -> Vec<LockEntry> {
     let mut raw = Vec::new();
