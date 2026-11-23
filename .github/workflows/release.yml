@@ -95,7 +95,9 @@ jobs:
 
       - name: Package (Unix)
         if: runner.os != 'Windows'
-        run: tar -czf "${{ matrix.asset }}.tar.gz" -C "target/${{ matrix.target }}/release" sentinel
+        run: |
+          chmod +x "target/${{ matrix.target }}/release/sentinel"
+          GZIP=-9 tar -czf "${{ matrix.asset }}.tar.gz" -C "target/${{ matrix.target }}/release" sentinel
 
       - name: Package (Windows)
         if: runner.os == 'Windows'
