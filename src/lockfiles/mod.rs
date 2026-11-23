@@ -6,7 +6,7 @@ pub mod npm;
 pub mod toml_locks;
 
 use crate::types::TransitiveVuln;
-use std::{collections::BTreeMap, collections::HashSet, path::Path};
+use std::{collections::{BTreeMap, HashMap, HashSet}, path::Path};
 
 pub type LockEntry = (&'static str, String, String);
 
@@ -31,34 +31,38 @@ pub fn locked_versions(dir: &Path, eco: &str) -> BTreeMap<String, Vec<String>> {
 
 pub fn resolve_ver(locked: &BTreeMap<String, Vec<String>>, name: &str, declared: &str) -> String {
     let Some(vers) = locked.get(name) else { return declared.to_string() };
-    if declared.is_empty() {
-        return if vers.len() == 1 { vers[0].clone() } else { String::new() };
-    }
+    if declared.is_empty() { return if vers.len() == 1 { vers[0].clone() } else { String::new() }; }
     vers.iter().find(|lv| lv.starts_with(declared)).cloned().unwrap_or_else(|| declared.to_string())
 }
 
-pub fn scan_lockfile_vulns(dir: &Path, extra_deps: &[LockEntry]) -> Result<Vec<TransitiveVuln>, String> {
-    let (mut seen, mut vulns, mut uncached) = (HashSet::new(), Vec::new(), Vec::new());
-    for (eco, name, ver) in collect_lock_entries(dir).into_iter().chain(extra_deps.iter().cloned()) {
-        let key = format!("osv:{eco}:{name}@{ver}");
-        if !seen.insert(key.clone()) { continue; }
-        if eco == "GitHub Actions" {
-            let ids = crate::osv::gha::query_action(&name, &ver)?;
-            if !ids.is_empty() { vulns.push(TransitiveVuln { ecosystem: eco.into(), package: name, version: ver, ids }); }
-            continue;
-        }
-        if let Some((cached, _)) = crate::cache::get(&key) {
-            if !cached.is_empty() {
-                vulns.push(TransitiveVuln { ecosystem: eco.into(), package: name, version: ver, ids: cached.split(',').map(String::from).collect() });
-            }
-        } else { uncached.push((eco.to_string(), name, ver, key)); }
-    }
-    let queries: Vec<_> = uncached.iter().map(|(e, n, v, _)| (e.clone(), n.clone(), v.clone())).collect();
-    if !queries.is_empty() {
-        for ((eco, name, ver, key), ids) in uncached.into_iter().zip(crate::osv::query_batch(&queries)?) {
-            crate::cache::set(key, ids.join(","), String::new());
-            if !ids.is_empty() { vulns.push(TransitiveVuln { ecosystem: eco, package: name, version: ver, ids }); }
+pub fn scan_batch(per_proj: Vec<(String, Vec<LockEntry>)>) -> Result<BTreeMap<String, Vec<TransitiveVuln>>, String> {
+    let (mut resolved, mut uncached) = (HashMap::new(), Vec::new());
+    for (_, entries) in &per_proj {
+        for (eco, name, ver) in entries {
+            let k = ((*eco).to_string(), name.clone(), ver.clone());
+            if resolved.contains_key(&k) { continue; }
+            if *eco == "GitHub Actions" {
+                resolved.insert(k, crate::osv::gha::query_action(name, ver)?);
+            } else if let Some((c, _)) = crate::cache::get(&format!("osv:{eco}:{name}@{ver}")) {
+                resolved.insert(k, if c.is_empty() { Vec::new() } else { c.split(',').map(String::from).collect() });
+            } else { resolved.insert(k.clone(), Vec::new()); uncached.push(k); }
         }
     }
-    Ok(vulns)
+    if !uncached.is_empty() {
+        for (k, ids) in uncached.iter().cloned().zip(crate::osv::query_batch(&uncached)?) {
+            crate::cache::set(format!("osv:{}:{}@{}", k.0, k.1, k.2), ids.join(","), String::new());
+            resolved.insert(k, ids);
+        }
+    }
+    let mut out = BTreeMap::<String, Vec<TransitiveVuln>>::new();
+    for (proj, entries) in per_proj {
+        let mut seen = HashSet::new();
+        let list: Vec<_> = entries.into_iter().filter_map(|(e, n, v)| {
+            let k = (e.to_string(), n, v);
+            let ids = resolved.get(&k).filter(|i| !i.is_empty())?;
+            seen.insert(k.clone()).then(|| TransitiveVuln { ecosystem: k.0, package: k.1, version: k.2, ids: ids.clone() })
+        }).collect();
+        if !list.is_empty() { out.insert(proj, list); }
+    }
+    Ok(out)
 }
