@@ -7,7 +7,7 @@ use std::process::Command;
 fn prints_version_and_help() {
     let v = run(&["--version"]);
     assert!(v.status.success());
-    assert!(String::from_utf8_lossy(&v.stdout).contains("sentinel 1.0.0"));
+    assert!(String::from_utf8_lossy(&v.stdout).contains(env!("CARGO_PKG_VERSION")));
 
     let h = run(&["--help"]);
     assert!(h.status.success());
