@@ -1,4 +1,3 @@
-use serde_json::Value;
 use std::{env, fs, io, path::Path, process::Command};
 
 fn asset_name() -> Option<&'static str> {
@@ -14,14 +13,6 @@ fn asset_name() -> Option<&'static str> {
         ("macos", "x86_64") => Some("sentinel-macos-amd64.tar.gz"),
         _ => None,
     }
-}
-
-fn find_asset_url(data: &Value, name: &str) -> Result<String, String> {
-    data.get("assets").and_then(Value::as_array)
-        .and_then(|arr| arr.iter().find(|a| a.get("name").and_then(Value::as_str) == Some(name)))
-        .and_then(|a| a.get("browser_download_url").and_then(Value::as_str))
-        .map(String::from)
-        .ok_or_else(|| format!("release asset '{name}' not found"))
 }
 
 fn extract_archive(archive: &Path, dest: &Path, is_zip: bool) -> Result<(), String> {
@@ -51,9 +42,9 @@ fn replace_exe(new_bin: &Path, exe: &Path) -> Result<(), String> {
     Ok(())
 }
 
-pub(super) fn install_from_release(data: &Value, lat: &str) -> Result<(), String> {
+pub(super) fn install_from_release(tag: &str, lat: &str) -> Result<(), String> {
     let name = asset_name().ok_or_else(|| format!("unsupported platform {}/{}", env::consts::OS, env::consts::ARCH))?;
-    let url = find_asset_url(data, name)?;
+    let url = format!("https://github.com/sebastianjnuwu/sentinel/releases/download/{tag}/{name}");
     let dir = env::temp_dir().join(format!("sentinel-upd-{lat}-{}", std::process::id()));
     let _ = fs::remove_dir_all(&dir);
     fs::create_dir_all(&dir).map_err(|e| format!("temp dir failed: {e}"))?;
