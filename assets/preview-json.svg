@@ -17,7 +17,7 @@
   <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13">
     <text x="24" y="64"><tspan fill="#58a6ff">$</tspan><tspan fill="#e6edf3"> sentinel --json --fail-on-cve ~/workspace/monorepo</tspan></text>
     <text x="24" y="92" fill="#8b949e">{</text>
-    <text x="40" y="112"><tspan fill="#79c0ff">"elapsed_secs"</tspan><tspan fill="#8b949e">: </tspan><tspan fill="#a5d6ff">0.184</tspan><tspan fill="#8b949e">,</text></text>
+    <text x="40" y="112"><tspan fill="#79c0ff">"elapsed_secs"</tspan><tspan fill="#8b949e">: </tspan><tspan fill="#a5d6ff">0.184</tspan><tspan fill="#8b949e">,</tspan></text>
     <text x="40" y="132"><tspan fill="#79c0ff">"outdated"</tspan><tspan fill="#8b949e">: {</tspan></text>
     <text x="56" y="152"><tspan fill="#79c0ff">"website"</tspan><tspan fill="#8b949e">: [{</tspan></text>
     <text x="72" y="172"><tspan fill="#79c0ff">"manager"</tspan><tspan fill="#8b949e">: </tspan><tspan fill="#a5d6ff">"npm"</tspan><tspan fill="#8b949e">, </tspan><tspan fill="#79c0ff">"name"</tspan><tspan fill="#8b949e">: </tspan><tspan fill="#a5d6ff">"vite"</tspan><tspan fill="#8b949e">, </tspan><tspan fill="#79c0ff">"kind"</tspan><tspan fill="#8b949e">: </tspan><tspan fill="#f85149">"MAJOR"</tspan><tspan fill="#8b949e">,</tspan></text>
