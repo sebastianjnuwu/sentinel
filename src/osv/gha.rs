@@ -8,62 +8,58 @@ fn cmp_ver(a: &str, b: &str) -> Ordering {
             .split('.').filter_map(|p| p.parse().ok()).collect()
     };
     let (va, vb) = (parse(a), parse(b));
-    for i in 0..va.len().max(vb.len()) {
-        match va.get(i).copied().unwrap_or(0).cmp(&vb.get(i).copied().unwrap_or(0)) {
-            Ordering::Equal => continue,
-            ord => return ord,
-        }
-    }
-    Ordering::Equal
+    (0..va.len().max(vb.len()))
+        .map(|i| va.get(i).copied().unwrap_or(0).cmp(&vb.get(i).copied().unwrap_or(0)))
+        .find(|o| *o != Ordering::Equal)
+        .unwrap_or(Ordering::Equal)
 }
 
-fn range_matches(cur: &str, range: &Value) -> bool {
+fn within_upper(cur: &str, cap: Option<&str>) -> bool {
+    let Some(s) = cap else { return true };
+    if let Some(v) = s.strip_prefix("<=") { return cmp_ver(cur, v.trim()) != Ordering::Greater; }
+    s.strip_prefix('<').is_none_or(|v| cmp_ver(cur, v.trim()) == Ordering::Less)
+}
+
+fn range_matches(cur: &str, range: &Value, cap: Option<&str>) -> bool {
     let Some(events) = range.get("events").and_then(Value::as_array) else { return false };
-    let mut active = false;
+    let (mut active, mut closed) = (false, false);
     for ev in events {
-        if let Some(intro) = ev.get("introduced").and_then(Value::as_str) {
-            active = intro == "0" || cmp_ver(cur, intro) != Ordering::Less;
-        } else if let Some(fixed) = ev.get("fixed").and_then(Value::as_str) {
-            if active && cmp_ver(cur, fixed) == Ordering::Less { return true; }
+        if let Some(i) = ev.get("introduced").and_then(Value::as_str) {
+            active = i == "0" || cmp_ver(cur, i) != Ordering::Less;
+        } else if let Some(f) = ev.get("fixed").and_then(Value::as_str) {
+            closed = true;
+            if active && cmp_ver(cur, f) == Ordering::Less { return true; }
             active = false;
-        } else if let Some(last) = ev.get("last_affected").and_then(Value::as_str) {
-            if active && cmp_ver(cur, last) != Ordering::Greater { return true; }
+        } else if let Some(l) = ev.get("last_affected").and_then(Value::as_str) {
+            closed = true;
+            if active && cmp_ver(cur, l) != Ordering::Greater { return true; }
             active = false;
         }
     }
-    active
+    active && (closed || within_upper(cur, cap))
 }
 
 fn affected_matches(repo: &str, cur: &str, aff: &Value) -> bool {
-    let pkg_name = aff.get("package").and_then(|p| p.get("name")).and_then(Value::as_str);
-    if pkg_name != Some(repo) { return false; }
+    if aff.get("package").and_then(|p| p.get("name")).and_then(Value::as_str) != Some(repo) { return false; }
     let norm = cur.trim_start_matches('v');
-    if let Some(vers) = aff.get("versions").and_then(Value::as_array)
-        && vers.iter().filter_map(Value::as_str).any(|v| v.trim_start_matches('v') == norm)
-    {
+    if aff.get("versions").and_then(Value::as_array).is_some_and(|vs| vs.iter().filter_map(Value::as_str).any(|v| v.trim_start_matches('v') == norm)) {
         return true;
     }
-    aff.get("ranges").and_then(Value::as_array)
-        .is_some_and(|rs| rs.iter().any(|r| range_matches(norm, r)))
+    let cap = aff.get("database_specific").and_then(|d| d.get("last_known_affected_version_range")).and_then(Value::as_str);
+    aff.get("ranges").and_then(Value::as_array).is_some_and(|rs| rs.iter().any(|r| range_matches(norm, r, cap)))
 }
 
 pub fn query_action(repo: &str, cur_tag: &str) -> Result<Vec<String>, String> {
     let key = format!("osv-gha:{repo}");
-    let raw = if let Some((cached, _)) = crate::cache::get(&key) {
-        cached
-    } else {
+    let raw = if let Some((cached, _)) = crate::cache::get(&key) { cached } else {
         let data = post_osv("https://api.osv.dev/v1/query", &json!({ "package": { "name": repo, "ecosystem": "GitHub Actions" } }))?;
         let text = data.to_string();
         crate::cache::set(key, text.clone(), String::new());
         text
     };
     let data: Value = serde_json::from_str(&raw).map_err(|e| format!("OSV cache JSON: {e}"))?;
-    let mut ids = Vec::new();
-    for v in data.get("vulns").and_then(Value::as_array).into_iter().flatten() {
-        let Some(id) = v.get("id").and_then(Value::as_str) else { continue };
-        if v.get("affected").and_then(Value::as_array).is_some_and(|a| a.iter().any(|af| affected_matches(repo, cur_tag, af))) {
-            ids.push(id.to_string());
-        }
-    }
-    Ok(ids)
+    Ok(data.get("vulns").and_then(Value::as_array).into_iter().flatten()
+        .filter(|v| v.get("affected").and_then(Value::as_array).is_some_and(|a| a.iter().any(|af| affected_matches(repo, cur_tag, af))))
+        .filter_map(|v| v.get("id").and_then(Value::as_str).map(String::from))
+        .collect())
 }
