@@ -33,6 +33,18 @@
   <img src="assets/preview.svg" alt="Sentinel Terminal Preview" width="100%" />
 </p>
 
+<details>
+<summary><strong>More output modes: <code>--json</code> &amp; <code>--sarif</code></strong></summary>
+
+<p align="center">
+  <img src="assets/preview-json.svg" alt="Sentinel JSON Output Preview" width="100%" />
+</p>
+<p align="center">
+  <img src="assets/preview-sarif.svg" alt="Sentinel SARIF Output Preview" width="100%" />
+</p>
+
+</details>
+
 ---
 
 ## ⚡ Why Sentinel?

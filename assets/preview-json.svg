@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="410" viewBox="0 0 980 410">
+  <defs>
+    <linearGradient id="bg" x1="0%" x2="0%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#161b22"/>
+    </linearGradient>
+  </defs>
+  <rect width="980" height="410" fill="url(#bg)" stroke="#30363d" stroke-width="1.5" rx="12"/>
+  <rect width="980" height="36" fill="#161b22" rx="12"/>
+  <rect width="980" height="12" y="24" fill="#161b22"/>
+  <line x1="0" x2="980" y1="36" y2="36" stroke="#30363d" stroke-width="1"/>
+  <circle cx="22" cy="18" r="6" fill="#ff5f56"/>
+  <circle cx="42" cy="18" r="6" fill="#ffbd2e"/>
+  <circle cx="62" cy="18" r="6" fill="#27c93f"/>
+  <text x="490" y="22" fill="#8b949e" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5" text-anchor="middle">sentinel --json</text>
+
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13">
+    <text x="24" y="64"><tspan fill="#58a6ff">$</tspan><tspan fill="#e6edf3"> sentinel --json --fail-on-cve ~/workspace/monorepo</tspan></text>
+    <text x="24" y="92" fill="#8b949e">{</text>
+    <text x="40" y="112"><tspan fill="#79c0ff">"elapsed_secs"</tspan><tspan fill="#8b949e">: </tspan><tspan fill="#a5d6ff">0.184</tspan><tspan fill="#8b949e">,</text></text>
+    <text x="40" y="132"><tspan fill="#79c0ff">"outdated"</tspan><tspan fill="#8b949e">: {</tspan></text>
+    <text x="56" y="152"><tspan fill="#79c0ff">"website"</tspan><tspan fill="#8b949e">: [{</tspan></text>
+    <text x="72" y="172"><tspan fill="#79c0ff">"manager"</tspan><tspan fill="#8b949e">: </tspan><tspan fill="#a5d6ff">"npm"</tspan><tspan fill="#8b949e">, </tspan><tspan fill="#79c0ff">"name"</tspan><tspan fill="#8b949e">: </tspan><tspan fill="#a5d6ff">"vite"</tspan><tspan fill="#8b949e">, </tspan><tspan fill="#79c0ff">"kind"</tspan><tspan fill="#8b949e">: </tspan><tspan fill="#f85149">"MAJOR"</tspan><tspan fill="#8b949e">,</tspan></text>
+    <text x="72" y="192"><tspan fill="#79c0ff">"current"</tspan><tspan fill="#8b949e">: </tspan><tspan fill="#a5d6ff">"6.0.0"</tspan><tspan fill="#8b949e">, </tspan><tspan fill="#79c0ff">"latest"</tspan><tspan fill="#8b949e">: </tspan><tspan fill="#a5d6ff">"8.3.8"</tspan><tspan fill="#8b949e">, </tspan><tspan fill="#79c0ff">"license"</tspan><tspan fill="#8b949e">: </tspan><tspan fill="#a5d6ff">"MIT"</tspan><tspan fill="#8b949e">,</tspan></text>
+    <text x="72" y="212"><tspan fill="#79c0ff">"cves"</tspan><tspan fill="#8b949e">: [</tspan><tspan fill="#f85149">"GHSA-356w-63v5-8wf4"</tspan><tspan fill="#8b949e">, </tspan><tspan fill="#f85149">"GHSA-4r4m-qw57-chrp"</tspan><tspan fill="#8b949e">, ...]</tspan></text>
+    <text x="56" y="232" fill="#8b949e">}]</text>
+    <text x="40" y="252" fill="#8b949e">},</text>
+    <text x="40" y="272"><tspan fill="#79c0ff">"lockfile_vulnerabilities"</tspan><tspan fill="#8b949e">: {</tspan></text>
+    <text x="56" y="292"><tspan fill="#79c0ff">"api"</tspan><tspan fill="#8b949e">: [{</tspan></text>
+    <text x="72" y="312"><tspan fill="#79c0ff">"ecosystem"</tspan><tspan fill="#8b949e">: </tspan><tspan fill="#a5d6ff">"Go"</tspan><tspan fill="#8b949e">, </tspan><tspan fill="#79c0ff">"package"</tspan><tspan fill="#8b949e">: </tspan><tspan fill="#a5d6ff">"github.com/golang-jwt/jwt/v4"</tspan><tspan fill="#8b949e">, </tspan><tspan fill="#79c0ff">"version"</tspan><tspan fill="#8b949e">: </tspan><tspan fill="#a5d6ff">"4.4.2"</tspan><tspan fill="#8b949e">,</tspan></text>
+    <text x="72" y="332"><tspan fill="#79c0ff">"ids"</tspan><tspan fill="#8b949e">: [</tspan><tspan fill="#f85149">"GHSA-29wx-vh33-7x7r"</tspan><tspan fill="#8b949e">, </tspan><tspan fill="#f85149">"GHSA-mh63-6h87-95cp"</tspan><tspan fill="#8b949e">, </tspan><tspan fill="#f85149">"GO-2024-3250"</tspan><tspan fill="#8b949e">, </tspan><tspan fill="#f85149">"GO-2025-3553"</tspan><tspan fill="#8b949e">]</tspan></text>
+    <text x="56" y="352" fill="#8b949e">}]</text>
+    <text x="40" y="372" fill="#8b949e">}</text>
+    <text x="24" y="392"><tspan fill="#8b949e">}  </tspan><tspan fill="#f85149" font-weight="bold">[exit 1 — CVE gate triggered]</tspan></text>
+  </g>
+</svg>
