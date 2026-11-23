@@ -1,3 +1,4 @@
+use crate::lockfiles::LockEntry;
 use crate::types::OutdatedPkg;
 use crate::version::{classify_update, clean_ver, is_newer};
 use serde_json::Value;
@@ -6,10 +7,9 @@ use std::{env, fs, path::Path};
 fn extract_pin(pin: &Value) -> Option<(String, String, String)> {
     let loc = pin.get("location").or_else(|| pin.get("repositoryURL")).and_then(Value::as_str)?;
     let ver = pin.get("state").and_then(|s| s.get("version")).and_then(Value::as_str)?;
-    let gh = loc.strip_prefix("https://github.com/")?;
-    let repo = gh.trim_end_matches(".git").to_string();
-    let name = pin.get("identity").or_else(|| pin.get("package")).and_then(Value::as_str).unwrap_or(&repo).to_string();
-    Some((name, repo, clean_ver(ver)))
+    let url = loc.strip_prefix("https://").or_else(|| loc.strip_prefix("http://"))?.trim_end_matches(".git").to_string();
+    let name = pin.get("identity").or_else(|| pin.get("package")).and_then(Value::as_str).unwrap_or(&url).to_string();
+    Some((name, url, clean_ver(ver)))
 }
 
 pub fn parse_swift_resolved(dir: &Path) -> Vec<(String, String, String)> {
@@ -19,10 +19,12 @@ pub fn parse_swift_resolved(dir: &Path) -> Vec<(String, String, String)> {
     pins.map(|arr| arr.iter().filter_map(extract_pin).collect()).unwrap_or_default()
 }
 
-pub fn collect(dir: &Path) -> Vec<OutdatedPkg> {
+pub fn collect(dir: &Path) -> (Vec<OutdatedPkg>, Vec<LockEntry>) {
     let pins = parse_swift_resolved(dir);
+    let direct = pins.iter().map(|(_, url, cur)| ("SwiftURL", url.clone(), cur.clone())).collect();
     let token = env::var("GITHUB_TOKEN").ok();
-    crate::pool::map_bounded(&pins, |(name, repo, cur)| {
+    let out = crate::pool::map_bounded(&pins, |(name, url, cur)| {
+        let repo = url.strip_prefix("github.com/")?;
         let key = format!("swift:{repo}");
         let latest = if let Some((t, _)) = crate::cache::get(&key) { t } else {
             let mut req = crate::http::agent().get(&format!("https://api.github.com/repos/{repo}/releases/latest"))
@@ -37,5 +39,6 @@ pub fn collect(dir: &Path) -> Vec<OutdatedPkg> {
             manager: "swiftpm".into(), name: name.clone(), kind: classify_update(cur, &latest),
             current: cur.clone(), latest, license: "-".into(), cves: Vec::new(),
         })
-    })
+    });
+    (out, direct)
 }

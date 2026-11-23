@@ -13,6 +13,7 @@ fn manifest_file(manager: &str) -> &'static str {
         "pub" | "Pub" => "pubspec.yaml",
         "hex" | "Hex" => "mix.exs",
         "pip" | "uv" | "PyPI" => "pyproject.toml",
+        "swiftpm" | "SwiftURL" => "Package.resolved",
         _ => "package.json",
     }
 }

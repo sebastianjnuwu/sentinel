@@ -51,3 +51,15 @@ fn gha_vulnerable_action_fails_cve_gate() {
     let cves = v["outdated"].as_object().unwrap().values().next().unwrap()[0]["cves"].as_array().unwrap();
     assert!(!cves.is_empty());
 }
+
+#[test]
+fn swift_v1_checks_swifturl_osv() {
+    let tmp = TempDir::new("swift-v1");
+    tmp.write("Package.resolved", r#"{"object":{"pins":[{"package":"swift-nio","repositoryURL":"https://github.com/apple/swift-nio.git","state":{"version":"2.0.0"}}]},"version":1}"#);
+    let out = run(&["--fail-on-cve", "--json", tmp.s()]);
+    assert_eq!(out.status.code(), Some(1));
+    let v = json(&out);
+    let vulns = v["lockfile_vulnerabilities"].as_object().unwrap().values().next().unwrap();
+    assert_eq!(vulns[0]["ecosystem"], "SwiftURL");
+    assert_eq!(vulns[0]["package"], "github.com/apple/swift-nio");
+}

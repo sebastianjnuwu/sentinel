@@ -7,7 +7,7 @@ All notable changes to **Sentinel** will be documented in this file.
 ### Added
 - Library target (`src/lib.rs`) for `docs.rs` documentation builds.
 - Modular integration test suites under `tests/` (`cli_test`, `config_test`, `lockfiles_test`, `collectors_test`, `output_test`).
-- OSV vulnerability scanning for GitHub Actions (`versions` and `ECOSYSTEM`/`SEMVER` range matching) and up-to-date direct dependencies.
+- OSV vulnerability scanning for GitHub Actions (`versions` and `ECOSYSTEM`/`SEMVER` range matching), Swift (`SwiftURL`), and up-to-date direct dependencies.
 - Native lockfile/manifest support for `go.sum` + `go.mod replace`, `package-lock.json` v1, Yarn Berry (v2+), `Cargo.toml` table & target sections, Maven `${properties}` / `<dependencyManagement>` / local parent POMs, Gradle Groovy map notation + `libs.versions.toml`, Swift `Package.resolved` v1, and lockfile-only project discovery.
 
 ### Changed

@@ -43,7 +43,7 @@ pub fn scan_project(root: &Path, dir: &Path) -> (Option<(String, Vec<OutdatedPkg
     if dir.join("Gemfile").exists() { push_pair(&mut items, &mut direct, ruby::collect(dir)); }
     if dir.join("pubspec.yaml").exists() { push_pair(&mut items, &mut direct, dart::collect(dir)); }
     if dir.join("mix.exs").exists() { push_pair(&mut items, &mut direct, elixir::collect(dir)); }
-    if dir.join("Package.resolved").exists() { items.extend(swift::collect(dir)); }
+    if dir.join("Package.resolved").exists() { push_pair(&mut items, &mut direct, swift::collect(dir)); }
     if dir.join(".terraform.lock.hcl").exists() { items.extend(terraform::collect(dir)); }
     if dir.join("Dockerfile").exists() || dir.join("docker-compose.yml").exists() || dir.join("docker-compose.yaml").exists() { items.extend(docker::collect(dir)); }
     if dir.join(".github").join("workflows").exists() { push_pair(&mut items, &mut direct, gha::collect(dir)); }
