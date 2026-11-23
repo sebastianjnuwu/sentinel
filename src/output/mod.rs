@@ -9,7 +9,8 @@ use crate::scan::{LockVulns, Report};
 
 pub fn render(opts: &CliOpts, report: &Report, lock_vulns: &LockVulns, elapsed: f64) {
     if opts.sarif {
-        sarif::print_sarif(report, lock_vulns);
+        let root_lbl = crate::collectors::project_label(&opts.root, &opts.root);
+        sarif::print_sarif(&root_lbl, report, lock_vulns);
     } else if opts.json {
         let out = serde_json::json!({
             "outdated": report,

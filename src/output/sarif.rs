@@ -18,9 +18,9 @@ fn manifest_file(manager: &str) -> &'static str {
     }
 }
 
-fn loc(proj: &str, mgr: &str) -> Value {
+fn loc(root_lbl: &str, proj: &str, mgr: &str) -> Value {
     let f = manifest_file(mgr);
-    let uri = if proj == "." { f.into() } else { format!("{}/{f}", proj.replace('\\', "/")) };
+    let uri = if proj == "." || proj == root_lbl { f.into() } else { format!("{}/{f}", proj.replace('\\', "/")) };
     json!([{ "physicalLocation": { "artifactLocation": { "uri": uri } } }])
 }
 
@@ -28,11 +28,11 @@ fn sarif_result(id: &str, msg: String, locs: Value) -> Value {
     json!({ "ruleId": id, "level": "error", "message": { "text": msg }, "locations": locs })
 }
 
-pub fn print_sarif(report: &BTreeMap<String, Vec<OutdatedPkg>>, lock_vulns: &BTreeMap<String, Vec<TransitiveVuln>>) {
+pub fn print_sarif(root_lbl: &str, report: &BTreeMap<String, Vec<OutdatedPkg>>, lock_vulns: &BTreeMap<String, Vec<TransitiveVuln>>) {
     let (mut results, mut rule_ids) = (Vec::new(), BTreeSet::new());
     for (proj, items) in report {
         for p in items {
-            let locs = loc(proj, &p.manager);
+            let locs = loc(root_lbl, proj, &p.manager);
             for id in &p.cves {
                 rule_ids.insert(id.clone());
                 let msg = format!("{}@{} ({}) has vulnerability {} — latest: {}", p.name, p.current, p.manager, id, p.latest);
@@ -42,7 +42,7 @@ pub fn print_sarif(report: &BTreeMap<String, Vec<OutdatedPkg>>, lock_vulns: &BTr
     }
     for (proj, vulns) in lock_vulns {
         for v in vulns {
-            let locs = loc(proj, &v.ecosystem);
+            let locs = loc(root_lbl, proj, &v.ecosystem);
             for id in &v.ids {
                 rule_ids.insert(id.clone());
                 let msg = format!("Transitive {}@{} [{}] has vulnerability {}", v.package, v.version, v.ecosystem, id);

@@ -14,6 +14,7 @@ fn sarif_emits_rules_level_and_no_fake_start_line() {
     let results = v["runs"][0]["results"].as_array().unwrap();
     assert!(rules.len() > 2);
     assert_eq!(results[0]["level"], "error");
+    assert_eq!(results[0]["locations"][0]["physicalLocation"]["artifactLocation"]["uri"], "package.json");
     assert!(results[0]["locations"][0]["physicalLocation"]["region"].is_null());
 }
 
