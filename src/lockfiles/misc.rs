@@ -1,20 +1,6 @@
 use crate::lockfiles::LockEntry;
 use serde_json::Value;
-use std::fs;
-use std::path::Path;
-
-pub fn parse_go_lock(dir: &Path, out: &mut Vec<LockEntry>) {
-    let Ok(text) = fs::read_to_string(dir.join("go.mod")) else { return };
-    for line in text.lines() {
-        let t = line.split("//").next().unwrap_or("").trim();
-        if t.is_empty() || t.starts_with("module ") || t.starts_with("go ") || t.starts_with("replace ") || t.ends_with('(') || t == ")" { continue; }
-        let mut p = t.strip_prefix("require").unwrap_or(t).split_whitespace();
-        if let (Some(m), Some(v)) = (p.next(), p.next()) {
-            let v = v.trim_start_matches('v').trim_end_matches("+incompatible");
-            if !m.is_empty() && !v.is_empty() { out.push(("Go", m.to_string(), v.to_string())); }
-        }
-    }
-}
+use std::{fs, path::Path};
 
 pub fn parse_composer_lock(dir: &Path, out: &mut Vec<LockEntry>) {
     let Ok(text) = fs::read_to_string(dir.join("composer.lock")) else { return };

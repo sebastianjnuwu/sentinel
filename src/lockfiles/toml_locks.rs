@@ -1,37 +1,36 @@
 use crate::lockfiles::LockEntry;
-use std::fs;
-use std::path::Path;
+use std::{fs, path::Path};
 
-fn parse_toml_packages(path: &Path, eco: &'static str, out: &mut Vec<LockEntry>) {
-    let Ok(text) = fs::read_to_string(path) else {
-        return;
+fn parse_toml_packages(path: &Path, eco: &'static str, cargo_mode: bool, out: &mut Vec<LockEntry>) {
+    let Ok(text) = fs::read_to_string(path) else { return };
+    let (mut name, mut ver, mut src) = (String::new(), String::new(), String::new());
+    let flush = |n: &str, v: &str, s: &str, out: &mut Vec<LockEntry>| {
+        if n.is_empty() || v.is_empty() { return; }
+        let ok = if cargo_mode {
+            s.starts_with("registry+")
+        } else {
+            !s.contains("editable") && !s.contains("directory") && !s.contains("virtual") && !s.contains("git")
+        };
+        if ok { out.push((eco, n.to_string(), v.to_string())); }
     };
-    let (mut name, mut ver) = (String::new(), String::new());
     for line in text.lines() {
         let t = line.trim();
         if t == "[[package]]" {
-            if !name.is_empty() && !ver.is_empty() {
-                out.push((eco, name.clone(), ver.clone()));
-            }
-            name.clear();
-            ver.clear();
-        } else if let Some(rest) = t.strip_prefix("name = ") {
-            name = rest.trim_matches('"').to_string();
-        } else if let Some(rest) = t.strip_prefix("version = ") {
-            ver = rest.trim_matches('"').to_string();
-        }
+            flush(&name, &ver, &src, out);
+            name.clear(); ver.clear(); src.clear();
+        } else if let Some(r) = t.strip_prefix("name = ") { name = r.trim_matches('"').to_string(); }
+        else if let Some(r) = t.strip_prefix("version = ") { ver = r.trim_matches('"').to_string(); }
+        else if let Some(r) = t.strip_prefix("source = ") { src = r.trim().trim_matches('"').to_string(); }
     }
-    if !name.is_empty() && !ver.is_empty() {
-        out.push((eco, name, ver));
-    }
+    flush(&name, &ver, &src, out);
 }
 
 pub fn parse_cargo_lock(dir: &Path, out: &mut Vec<LockEntry>) {
-    parse_toml_packages(&dir.join("Cargo.lock"), "crates.io", out);
+    parse_toml_packages(&dir.join("Cargo.lock"), "crates.io", true, out);
 }
 
 pub fn parse_uv_lock(dir: &Path, out: &mut Vec<LockEntry>) {
-    parse_toml_packages(&dir.join("uv.lock"), "PyPI", out);
+    parse_toml_packages(&dir.join("uv.lock"), "PyPI", false, out);
 }
 
 #[cfg(test)]
@@ -39,16 +38,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn parses_cargo_lock_entries() {
-        let dir = std::env::temp_dir().join(format!("sentinel-test-{}", std::process::id()));
+    fn skips_git_and_path_sources() {
+        let dir = std::env::temp_dir().join(format!("sentinel-lock-{}", std::process::id()));
         let _ = fs::create_dir_all(&dir);
-        let sample = "[[package]]\nname = \"serde\"\nversion = \"1.0.200\"\n\n[[package]]\nname = \"ureq\"\nversion = \"2.12.1\"\n";
+        let sample = "[[package]]\nname = \"serde\"\nversion = \"1.0.200\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\n\n[[package]]\nname = \"time\"\nversion = \"0.1.44\"\nsource = \"git+https://github.com/example/time#abc\"\n\n[[package]]\nname = \"local\"\nversion = \"0.1.0\"\n";
         let _ = fs::write(dir.join("Cargo.lock"), sample);
         let mut out = Vec::new();
         parse_cargo_lock(&dir, &mut out);
         let _ = fs::remove_dir_all(&dir);
-        assert_eq!(out.len(), 2);
-        assert_eq!(out[0], ("crates.io", "serde".into(), "1.0.200".into()));
-        assert_eq!(out[1], ("crates.io", "ureq".into(), "2.12.1".into()));
+        assert_eq!(out, vec![("crates.io", "serde".into(), "1.0.200".into())]);
     }
 }

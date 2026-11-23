@@ -6,7 +6,6 @@ rust-version = "1.85"
 license = "Apache-2.0"
 description = "Fast, cross-platform Rust CLI for multi-ecosystem dependency, license, and OSV vulnerability scanning."
 repository = "https://github.com/sebastianjnuwu/sentinel"
-homepage = "https://github.com/sebastianjnuwu/sentinel"
 documentation = "https://docs.rs/sentinel-scan"
 readme = "README.md"
 authors = ["sebastianjnuwu"]
@@ -20,4 +19,4 @@ path = "src/main.rs"
 [dependencies]
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-ureq = { version = "2", features = ["json"] }
+ureq = { version = "3", features = ["json"] }

@@ -52,7 +52,7 @@
 | 🟩 **JS / TS** (`npm`, `pnpm`, `yarn`, `bun`) | `package.json` | `package-lock.json`, `pnpm-lock.yaml`, `yarn.lock` | ✅ | ✅ |
 | 🐹 **Go** | `go.mod` | `go.sum` | — | ✅ |
 | 🦀 **Rust** (`cargo`) | `Cargo.toml` | `Cargo.lock` | ✅ | ✅ |
-| 🐍 **Python** (`uv`, `pip`) | `pyproject.toml`, `requirements.txt` | `uv.lock`, `poetry.lock` | — | ✅ |
+| 🐍 **Python** (`uv`, `pip`) | `pyproject.toml`, `requirements.txt` | `uv.lock`, `poetry.lock` | ✅ | ✅ |
 | 🐘 **PHP** (`composer`) | `composer.json` | `composer.lock` | — | ✅ |
 | 🟣 **.NET** (`dotnet`) | `*.csproj`, `*.fsproj` | `packages.lock.json` | — | ✅ |
 | ☕ **Java / Kotlin** (`maven`, `gradle`) | `pom.xml`, `build.gradle(.kts)` | — | — | ✅ |
@@ -62,7 +62,7 @@
 | 🍎 **Swift / iOS** (`swiftpm`) | `Package.resolved` | — | — | — |
 | 🧱 **Terraform** | `.terraform.lock.hcl` | — | — | — |
 | 🐳 **Docker** | `Dockerfile`, `docker-compose.yml` | — | — | — |
-| 🐙 **GitHub Actions** | `.github/workflows/*.yml` | — | — | — |
+| 🐙 **GitHub Actions** | `.github/workflows/*.yml` | — | — | ✅ |
 
 ---
 

@@ -1,18 +1,15 @@
+use crate::console::c;
+use crate::output::format::safe;
 use crate::types::TransitiveVuln;
 use std::collections::BTreeMap;
 
 pub fn print_lockfile_vulns(vulns: &BTreeMap<String, Vec<TransitiveVuln>>) {
-    println!("🔒 \x1b[1;31mLockfile / Transitive Vulnerabilities (OSV):\x1b[0m");
+    let (dim, bold, cyan, red, rst) = (c("\x1b[90m"), c("\x1b[1m"), c("\x1b[1;36m"), c("\x1b[1;31m"), c("\x1b[0m"));
+    println!("🔒 {red}Lockfile / Transitive Vulnerabilities (OSV):{rst}");
     for (proj, list) in vulns {
-        println!("  📦 \x1b[1;36m{proj}\x1b[0m \x1b[90m({} vulnerable package(s))\x1b[0m", list.len());
+        println!("  📦 {cyan}{}{rst} {dim}({} vulnerable package(s)){rst}", safe(proj), list.len());
         for v in list {
-            println!(
-                "    ⚠️  \x1b[1m{}@{}\x1b[0m \x1b[90m[{}]\x1b[0m → \x1b[1;31m{}\x1b[0m",
-                v.package,
-                v.version,
-                v.ecosystem,
-                v.ids.join(", ")
-            );
+            println!("    ⚠️  {bold}{}@{}{rst} {dim}[{}]{rst} → {red}{}{rst}", safe(&v.package), safe(&v.version), safe(&v.ecosystem), safe(&v.ids.join(", ")));
         }
     }
     println!();

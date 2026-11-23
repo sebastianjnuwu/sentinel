@@ -1,20 +1,28 @@
 use crate::lockfiles::LockEntry;
 use serde_json::Value;
-use std::fs;
-use std::path::Path;
+use std::{fs, path::Path};
+
+fn yarn_header_pkg(line: &str) -> Option<String> {
+    let key = line.trim_end_matches(':').split(',').next()?.trim().trim_matches('"');
+    if key.is_empty() || key == "__metadata" { return None; }
+    let idx = key.get(1..)?.find('@').map(|i| i + 1)?;
+    Some(key[..idx].to_string())
+}
 
 pub fn parse_yarn_lock(dir: &Path, out: &mut Vec<LockEntry>) {
     let Ok(text) = fs::read_to_string(dir.join("yarn.lock")) else { return };
-    let mut name = String::new();
+    let (mut name, mut skip) = (String::new(), false);
     for line in text.lines() {
         if !line.starts_with(' ') && line.ends_with(':') && !line.starts_with('#') {
-            let key = line.trim_end_matches(':').split(',').next().unwrap_or("").trim().trim_matches('"');
-            if let Some(i) = key.rfind('@').filter(|&i| i > 0) {
-                name = key[..i].to_string();
-            }
-        } else if let Some(rest) = line.trim().strip_prefix("version ") {
-            let ver = rest.trim().trim_matches('"');
-            if !name.is_empty() && !ver.is_empty() {
+            skip = false;
+            name = yarn_header_pkg(line).unwrap_or_default();
+        } else if let Some(res) = line.trim().strip_prefix("resolution:") {
+            if res.contains("@workspace:") || res.contains("@link:") { skip = true; }
+        } else if let Some(rest) = line.trim().strip_prefix("version:")
+            .or_else(|| line.trim().strip_prefix("version "))
+        {
+            let ver = rest.trim().trim_matches(['"', '\'']);
+            if !skip && !name.is_empty() && !ver.is_empty() {
                 out.push(("npm", name.clone(), ver.to_string()));
                 name.clear();
             }
@@ -29,13 +37,9 @@ pub fn parse_poetry_lock(dir: &Path, out: &mut Vec<LockEntry>) {
         let t = line.trim();
         if t == "[[package]]" {
             if !name.is_empty() && !ver.is_empty() { out.push(("PyPI", name.clone(), ver.clone())); }
-            name.clear();
-            ver.clear();
-        } else if let Some(r) = t.strip_prefix("name = ") {
-            name = r.trim_matches('"').to_string();
-        } else if let Some(r) = t.strip_prefix("version = ") {
-            ver = r.trim_matches('"').to_string();
-        }
+            name.clear(); ver.clear();
+        } else if let Some(r) = t.strip_prefix("name = ") { name = r.trim_matches('"').to_string(); }
+        else if let Some(r) = t.strip_prefix("version = ") { ver = r.trim_matches('"').to_string(); }
     }
     if !name.is_empty() && !ver.is_empty() { out.push(("PyPI", name, ver)); }
 }

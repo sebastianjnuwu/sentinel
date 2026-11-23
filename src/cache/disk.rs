@@ -1,9 +1,17 @@
-use super::Map;
-use std::fs;
-use std::path::PathBuf;
+use super::{Map, TTL_SECS, now_secs};
+use std::{env, fs, path::PathBuf};
+
+fn cache_dir() -> PathBuf {
+    env::var_os("XDG_CACHE_HOME")
+        .map(PathBuf::from)
+        .or_else(|| env::var_os("LOCALAPPDATA").map(PathBuf::from))
+        .or_else(|| env::var_os("HOME").map(|h| PathBuf::from(h).join(".cache")))
+        .unwrap_or_else(env::temp_dir)
+        .join("sentinel")
+}
 
 fn path() -> PathBuf {
-    std::env::temp_dir().join("sentinel-registry-cache.json")
+    cache_dir().join("registry-cache.json")
 }
 
 pub fn load() -> Map {
@@ -14,8 +22,18 @@ pub fn load() -> Map {
 }
 
 pub fn save(map: &Map) {
-    let Ok(json) = serde_json::to_string(map) else { return };
-    let tmp = std::env::temp_dir().join(format!("sentinel-cache-{}.tmp", std::process::id()));
+    let dir = cache_dir();
+    if fs::create_dir_all(&dir).is_err() {
+        return;
+    }
+    let now = now_secs();
+    let active: Map = map
+        .iter()
+        .filter(|(_, e)| now.saturating_sub(e.ts) < TTL_SECS)
+        .map(|(k, v)| (k.clone(), v.clone()))
+        .collect();
+    let Ok(json) = serde_json::to_string(&active) else { return };
+    let tmp = dir.join(format!("registry-cache-{}.tmp", std::process::id()));
     if fs::write(&tmp, json).is_ok() {
         let _ = fs::rename(&tmp, path());
     }

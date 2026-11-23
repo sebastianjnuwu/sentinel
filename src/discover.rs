@@ -6,10 +6,12 @@ const SKIP_DIRS: &[&str] = &[
     "vendor", ".venv", "venv", "__pycache__", ".agents", "backup", "bin", "obj",
 ];
 const MARKERS: &[&str] = &[
-    "package.json", "go.mod", "Cargo.toml", "pyproject.toml", "requirements.txt",
-    "composer.json", "pom.xml", "build.gradle", "build.gradle.kts", "Gemfile",
-    "Gemfile.lock", "pubspec.yaml", "pubspec.lock", "mix.exs", "mix.lock",
-    "Dockerfile", "docker-compose.yml", "docker-compose.yaml",
+    "package.json", "package-lock.json", "pnpm-lock.yaml", "yarn.lock",
+    "go.mod", "go.sum", "Cargo.toml", "Cargo.lock",
+    "pyproject.toml", "requirements.txt", "uv.lock", "poetry.lock",
+    "composer.json", "composer.lock", "pom.xml", "build.gradle", "build.gradle.kts",
+    "Gemfile", "Gemfile.lock", "pubspec.yaml", "pubspec.lock", "mix.exs", "mix.lock",
+    "packages.lock.json", "Dockerfile", "docker-compose.yml", "docker-compose.yaml",
     "Package.resolved", ".terraform.lock.hcl",
 ];
 

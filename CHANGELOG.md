@@ -4,9 +4,24 @@ All notable changes to **Sentinel** will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- Library target (`src/lib.rs`) for `docs.rs` documentation builds.
+- Modular integration test suites under `tests/` (`cli_test`, `config_test`, `lockfiles_test`, `collectors_test`, `output_test`).
+- OSV vulnerability scanning for GitHub Actions (`versions` and `ECOSYSTEM`/`SEMVER` range matching) and up-to-date direct dependencies.
+- Native lockfile/manifest support for `go.sum` + `go.mod replace`, `package-lock.json` v1, Yarn Berry (v2+), `Cargo.toml` table & target sections, Maven `${properties}` / `<dependencyManagement>` / local parent POMs, Gradle Groovy map notation + `libs.versions.toml`, Swift `Package.resolved` v1, and lockfile-only project discovery.
+
 ### Changed
-- crates.io package renamed to `sentinel-scan` (the binary remains `sentinel`).
-- Added crates.io metadata: description, repository, homepage, docs, keywords, categories and MSRV.
+- Upgraded `ureq` from `2.12.1` to `3.5.2` with a 15s global HTTP request timeout.
+- Replaced host-environment Python `pip list` scanning with project manifest (`requirements.txt` / `pyproject.toml`) + PyPI lookups.
+- Unified OSV batching (chunks of 500), bounded 16-worker concurrency across all HTTP collectors, and moved disk cache to user cache directory with expired-entry pruning.
+- Respected `NO_COLOR` / non-TTY output, sanitized control chars, added SARIF `driver.rules`, removed redundant `package.homepage` in `Cargo.toml`.
+
+### Fixed
+- Removed 2-CVE truncation per package across direct and transitive results.
+- Propagated OSV lookup failures with retries and non-zero exit instead of reporting silent clean scans.
+- Rejected unknown CLI flags, invalid `--depth`, and nonexistent/non-directory paths with exit code `2`.
+- Applied `ignore_packages` to transitive lockfile vulnerabilities, supported multi-line/single-quoted `sentinel.toml` arrays, and used token-based SPDX matching for `deny_licenses`.
+- Isolated lockfile discovery to each project directory, filtered git/path entries from `Cargo.lock`/`uv.lock`, fixed `resolve_ver` fallback, and warned on unsupported Docker registries/tags.
 
 ## [1.0.0] - 2026-11-22
 
