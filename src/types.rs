@@ -1,5 +1,7 @@
 use serde::Serialize;
 
+pub type LockEntry = (&'static str, String, String);
+
 #[derive(Debug, Clone, Serialize)]
 pub struct OutdatedPkg {
     pub manager: String,
@@ -17,4 +19,11 @@ pub struct TransitiveVuln {
     pub package: String,
     pub version: String,
     pub ids: Vec<String>,
+}
+
+#[derive(Default)]
+pub struct ProjectScan {
+    pub outdated: Vec<OutdatedPkg>,
+    pub direct: Vec<LockEntry>,
+    pub licenses: Vec<(String, String)>,
 }

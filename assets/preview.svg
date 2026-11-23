@@ -1,1 +1,76 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="860" height="330" viewBox="0 0 860 330"><defs><linearGradient id="bg" x1="0%" x2="0%" y1="0%" y2="100%"><stop offset="0%" stop-color="#0d1117"/><stop offset="100%" stop-color="#161b22"/></linearGradient></defs><rect width="860" height="330" fill="url(#bg)" stroke="#30363d" stroke-width="1.5" rx="12"/><rect width="860" height="34" fill="#161b22" rx="12"/><rect width="860" height="12" y="22" fill="#161b22"/><line x1="0" x2="860" y1="34" y2="34" stroke="#30363d" stroke-width="1"/><circle cx="20" cy="17" r="6" fill="#ff5f56"/><circle cx="40" cy="17" r="6" fill="#ffbd2e"/><circle cx="60" cy="17" r="6" fill="#27c93f"/><text x="430" y="21" fill="#8b949e" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" text-anchor="middle">sentinel — terminal</text><g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13.5" xml:space="preserve"><text x="20" y="64"><tspan fill="#58a6ff">$</tspan><tspan fill="#e6edf3"> sentinel ~/projects/website</tspan></text><text x="20" y="88" fill="#c9d1d9">🛡️ Sentinel: scanning 1 project(s) in ~/projects/website...</text><text x="20" y="120"><tspan fill="#e6edf3">📦 </tspan><tspan fill="#56d4dd" font-weight="bold">website</tspan><tspan fill="#8b949e"> (3 outdated)</tspan></text><text x="20" y="144" fill="#6e7681">┌────────────────┬────────────┬───────────────────┬──────────┬────────────┬─────────────────────┐</text><text x="20" y="164" fill="#e6edf3"><tspan fill="#6e7681">│ </tspan><tspan font-weight="bold">PACKAGE </tspan><tspan fill="#6e7681"> │ </tspan><tspan font-weight="bold">MANAGER </tspan><tspan fill="#6e7681"> │ </tspan><tspan font-weight="bold">VERSION </tspan><tspan fill="#6e7681"> │ </tspan><tspan font-weight="bold">TYPE </tspan><tspan fill="#6e7681"> │ </tspan><tspan font-weight="bold">LICENSE </tspan><tspan fill="#6e7681"> │ </tspan><tspan font-weight="bold">CVE </tspan><tspan fill="#6e7681"> │</tspan></text><text x="20" y="182" fill="#6e7681">├────────────────┼────────────┼───────────────────┼──────────┼────────────┼─────────────────────┤</text><text x="20" y="202"><tspan fill="#6e7681">│ </tspan><tspan fill="#e6edf3">@biomejs/biome</tspan><tspan fill="#6e7681"> │ </tspan><tspan fill="#8b949e">🟩 npm </tspan><tspan fill="#6e7681"> │ </tspan><tspan fill="#e6edf3" font-weight="bold">2.6.6 → 2.6.8 </tspan><tspan fill="#6e7681"> │ </tspan><tspan fill="#3fb950" font-weight="bold">🟢 PATCH</tspan><tspan fill="#6e7681"> │ </tspan><tspan fill="#8b949e">Apache-2.0</tspan><tspan fill="#6e7681"> │ </tspan><tspan fill="#6e7681">- </tspan><tspan fill="#6e7681"> │</tspan></text><text x="20" y="222"><tspan fill="#6e7681">│ </tspan><tspan fill="#e6edf3">lodash </tspan><tspan fill="#6e7681"> │ </tspan><tspan fill="#8b949e">🟩 npm </tspan><tspan fill="#6e7681"> │ </tspan><tspan fill="#e6edf3" font-weight="bold">4.17.20 → 4.18.1 </tspan><tspan fill="#6e7681"> │ </tspan><tspan fill="#d29922" font-weight="bold">🟡 MINOR</tspan><tspan fill="#6e7681"> │ </tspan><tspan fill="#8b949e">MIT </tspan><tspan fill="#6e7681"> │ </tspan><tspan fill="#f85149" font-weight="bold">GHSA-35jh-r3h4-6jhm</tspan><tspan fill="#6e7681"> │</tspan></text><text x="20" y="242"><tspan fill="#6e7681">│ </tspan><tspan fill="#e6edf3">vite </tspan><tspan fill="#6e7681"> │ </tspan><tspan fill="#8b949e">🟩 npm </tspan><tspan fill="#6e7681"> │ </tspan><tspan fill="#e6edf3" font-weight="bold">6.0.0 → 8.3.8 </tspan><tspan fill="#6e7681"> │ </tspan><tspan fill="#f85149" font-weight="bold">🔴 MAJOR</tspan><tspan fill="#6e7681"> │ </tspan><tspan fill="#8b949e">MIT </tspan><tspan fill="#6e7681"> │ </tspan><tspan fill="#6e7681">- </tspan><tspan fill="#6e7681"> │</tspan></text><text x="20" y="260" fill="#6e7681">└────────────────┴────────────┴───────────────────┴──────────┴────────────┴─────────────────────┘</text><text x="20" y="282"><tspan fill="#e6edf3">⚡ </tspan><tspan fill="#8b949e">update (npm): </tspan><tspan fill="#56d4dd">npm install &lt;pkg&gt;@latest</tspan></text><text x="20" y="310"><tspan fill="#e6edf3" font-weight="bold">📊 Summary: </tspan><tspan fill="#f85149" font-weight="bold">🔴 1 major</tspan><tspan fill="#8b949e"> · </tspan><tspan fill="#d29922" font-weight="bold">🟡 1 minor</tspan><tspan fill="#8b949e"> · </tspan><tspan fill="#3fb950" font-weight="bold">🟢 1 patch</tspan><tspan fill="#8b949e"> · </tspan><tspan fill="#f85149" font-weight="bold">⚠️ 1 CVE(s)</tspan><tspan fill="#8b949e"> (0.18s)</tspan></text></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="450" viewBox="0 0 980 450">
+  <defs>
+    <linearGradient id="bg" x1="0%" x2="0%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#161b22"/>
+    </linearGradient>
+  </defs>
+  <rect width="980" height="450" fill="url(#bg)" stroke="#30363d" stroke-width="1.5" rx="12"/>
+  <rect width="980" height="36" fill="#161b22" rx="12"/>
+  <rect width="980" height="12" y="24" fill="#161b22"/>
+  <line x1="0" x2="980" y1="36" y2="36" stroke="#30363d" stroke-width="1"/>
+  <circle cx="22" cy="18" r="6" fill="#ff5f56"/>
+  <circle cx="42" cy="18" r="6" fill="#ffbd2e"/>
+  <circle cx="62" cy="18" r="6" fill="#27c93f"/>
+  <text x="490" y="22" fill="#8b949e" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5" text-anchor="middle">sentinel — terminal</text>
+
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13">
+    <text x="24" y="64"><tspan fill="#58a6ff">$</tspan><tspan fill="#e6edf3"> sentinel ~/workspace/monorepo</tspan></text>
+    <text x="24" y="88" fill="#c9d1d9">🛡️  Sentinel: scanning 3 project(s) in ~/workspace/monorepo...</text>
+    <text x="24" y="116"><tspan fill="#e6edf3">📦 </tspan><tspan fill="#56d4dd" font-weight="bold">website</tspan><tspan fill="#8b949e"> (3 outdated)</tspan></text>
+
+    <!-- Vector Table Frame (pixel-aligned, never clipped) -->
+    <rect x="24" y="128" width="932" height="114" rx="6" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+    <line x1="24" y1="156" x2="956" y2="156" stroke="#30363d" stroke-width="1"/>
+    <line x1="184" y1="128" x2="184" y2="242" stroke="#30363d" stroke-width="1"/>
+    <line x1="296" y1="128" x2="296" y2="242" stroke="#30363d" stroke-width="1"/>
+    <line x1="478" y1="128" x2="478" y2="242" stroke="#30363d" stroke-width="1"/>
+    <line x1="590" y1="128" x2="590" y2="242" stroke="#30363d" stroke-width="1"/>
+    <line x1="726" y1="128" x2="726" y2="242" stroke="#30363d" stroke-width="1"/>
+
+    <!-- Header -->
+    <g fill="#e6edf3" font-weight="bold" font-size="12">
+      <text x="36" y="146">PACKAGE</text>
+      <text x="196" y="146">MANAGER</text>
+      <text x="308" y="146">VERSION</text>
+      <text x="490" y="146">TYPE</text>
+      <text x="602" y="146">LICENSE</text>
+      <text x="738" y="146">CVE</text>
+    </g>
+
+    <!-- Row 1 -->
+    <text x="36" y="178" fill="#e6edf3">@biomejs/biome</text>
+    <text x="196" y="178" fill="#8b949e">🟩 npm</text>
+    <text x="308" y="178" fill="#e6edf3" font-weight="bold">2.6.6 → 2.6.8</text>
+    <text x="490" y="178" fill="#3fb950" font-weight="bold">🟢 PATCH</text>
+    <text x="602" y="178" fill="#8b949e">MIT OR Apache…</text>
+    <text x="738" y="178" fill="#6e7681">-</text>
+
+    <!-- Row 2 -->
+    <text x="36" y="204" fill="#e6edf3">lodash</text>
+    <text x="196" y="204" fill="#8b949e">🟩 npm</text>
+    <text x="308" y="204" fill="#e6edf3" font-weight="bold">4.17.20 → 4.18.1</text>
+    <text x="490" y="204" fill="#d29922" font-weight="bold">🟡 MINOR</text>
+    <text x="602" y="204" fill="#8b949e">MIT</text>
+    <text x="738" y="204" fill="#f85149" font-weight="bold">GHSA-35jh-r3h4-6jhm</text>
+
+    <!-- Row 3 -->
+    <text x="36" y="230" fill="#e6edf3">vite</text>
+    <text x="196" y="230" fill="#8b949e">🟩 npm</text>
+    <text x="308" y="230" fill="#e6edf3" font-weight="bold">6.0.0 → 8.3.8</text>
+    <text x="490" y="230" fill="#f85149" font-weight="bold">🔴 MAJOR</text>
+    <text x="602" y="230" fill="#8b949e">MIT</text>
+    <text x="738" y="230" fill="#f85149" font-weight="bold">GHSA-356w-63v5-8wf4 (+17)</text>
+
+    <!-- Update hint + Summary -->
+    <text x="24" y="266"><tspan fill="#e6edf3">⚡ </tspan><tspan fill="#8b949e">update (npm): </tspan><tspan fill="#56d4dd">npm install &lt;pkg&gt;@latest</tspan></text>
+    <text x="24" y="298"><tspan fill="#e6edf3" font-weight="bold">📊 Summary: </tspan><tspan fill="#f85149" font-weight="bold">🔴 1 major</tspan><tspan fill="#8b949e"> · </tspan><tspan fill="#d29922" font-weight="bold">🟡 1 minor</tspan><tspan fill="#8b949e"> · </tspan><tspan fill="#3fb950" font-weight="bold">🟢 1 patch</tspan><tspan fill="#8b949e"> · </tspan><tspan fill="#f85149" font-weight="bold">⚠️  24 CVE(s)</tspan><tspan fill="#8b949e"> (0.18s)</tspan></text>
+
+    <!-- Transitive lockfile findings -->
+    <text x="24" y="334" fill="#f85149" font-weight="bold">🔒 Lockfile / Transitive Vulnerabilities (OSV):</text>
+    <text x="36" y="358"><tspan fill="#e6edf3">📦 </tspan><tspan fill="#56d4dd" font-weight="bold">api</tspan><tspan fill="#8b949e"> (2 vulnerable package(s))</tspan></text>
+    <text x="48" y="382"><tspan fill="#e6edf3" font-weight="bold">⚠️  github.com/golang-jwt/jwt/v4@4.4.2 </tspan><tspan fill="#8b949e">[Go] → </tspan><tspan fill="#f85149" font-weight="bold">GHSA-29wx-vh33-7x7r, GHSA-mh63-6h87-95cp (+2)</tspan></text>
+    <text x="48" y="406"><tspan fill="#e6edf3" font-weight="bold">⚠️  gopkg.in/yaml.v3@3.0.0 </tspan><tspan fill="#8b949e">[Go] → </tspan><tspan fill="#f85149" font-weight="bold">GHSA-hp87-p4gw-j4gq, GO-2022-0603</tspan></text>
+    <text x="24" y="432" fill="#8b949e">⬆️  <tspan fill="#d29922">New Sentinel version available:</tspan> v1.0.1 → v1.1.0 <tspan fill="#56d4dd">(run 'sentinel -u' to update)</tspan></text>
+  </g>
+</svg>

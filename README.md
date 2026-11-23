@@ -33,6 +33,18 @@
   <img src="assets/preview.svg" alt="Sentinel Terminal Preview" width="100%" />
 </p>
 
+<details>
+<summary><strong>More output modes: <code>--json</code> &amp; <code>--sarif</code></strong></summary>
+
+<p align="center">
+  <img src="assets/preview-json.svg" alt="Sentinel JSON Output Preview" width="100%" />
+</p>
+<p align="center">
+  <img src="assets/preview-sarif.svg" alt="Sentinel SARIF Output Preview" width="100%" />
+</p>
+
+</details>
+
 ---
 
 ## ⚡ Why Sentinel?
@@ -52,17 +64,17 @@
 | 🟩 **JS / TS** (`npm`, `pnpm`, `yarn`, `bun`) | `package.json` | `package-lock.json`, `pnpm-lock.yaml`, `yarn.lock` | ✅ | ✅ |
 | 🐹 **Go** | `go.mod` | `go.sum` | — | ✅ |
 | 🦀 **Rust** (`cargo`) | `Cargo.toml` | `Cargo.lock` | ✅ | ✅ |
-| 🐍 **Python** (`uv`, `pip`) | `pyproject.toml`, `requirements.txt` | `uv.lock`, `poetry.lock` | — | ✅ |
+| 🐍 **Python** (`uv`, `pip`) | `pyproject.toml`, `requirements.txt` | `uv.lock`, `poetry.lock` | ✅ | ✅ |
 | 🐘 **PHP** (`composer`) | `composer.json` | `composer.lock` | — | ✅ |
 | 🟣 **.NET** (`dotnet`) | `*.csproj`, `*.fsproj` | `packages.lock.json` | — | ✅ |
 | ☕ **Java / Kotlin** (`maven`, `gradle`) | `pom.xml`, `build.gradle(.kts)` | — | — | ✅ |
 | 💎 **Ruby** (`bundler`) | `Gemfile` | `Gemfile.lock` | ✅ | ✅ |
 | 🐦 **Dart / Flutter** (`pub`) | `pubspec.yaml` | `pubspec.lock` | — | ✅ |
 | ⚡ **Elixir** (`hex`) | `mix.exs` | `mix.lock` | ✅ | ✅ |
-| 🍎 **Swift / iOS** (`swiftpm`) | `Package.resolved` | — | — | — |
+| 🍎 **Swift / iOS** (`swiftpm`) | `Package.resolved` | — | — | ✅ |
 | 🧱 **Terraform** | `.terraform.lock.hcl` | — | — | — |
-| 🐳 **Docker** | `Dockerfile`, `docker-compose.yml` | — | — | — |
-| 🐙 **GitHub Actions** | `.github/workflows/*.yml` | — | — | — |
+| 🐳 **Docker** | `Dockerfile`, `docker-compose.yml` | — | — | ✅ |
+| 🐙 **GitHub Actions** | `.github/workflows/*.yml` | — | — | ✅ |
 
 ---
 
@@ -137,6 +149,7 @@ sentinel --sarif /path/to/workspace > sentinel.sarif
 | `--fail-on-major` | Exit with code `1` if any `MAJOR` update is found |
 | `--depth <N>` | Maximum recursive directory depth (default: `3`) |
 | `--no-cache` | Bypass the 15-minute local registry & OSV cache |
+| `-u`, `--update` | Download and install the latest Sentinel release |
 | `-V`, `--version` | Print version |
 | `-h`, `--help` | Print help |
 
@@ -156,6 +169,7 @@ Create an optional `sentinel.toml` in your project or workspace root:
 ignore_packages = ["legacy-pkg", "ureq"]
 ignore_dirs = ["examples", "fixtures"]
 deny_licenses = ["GPL", "AGPL"]
+check_updates = true   # set to false to disable background update check
 ```
 
 ---

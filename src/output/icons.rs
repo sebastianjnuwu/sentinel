@@ -19,11 +19,12 @@ pub fn manager_icon(manager: &str) -> &'static str {
 }
 
 pub fn severity_style(kind: &str) -> (&'static str, &'static str) {
+    let c = crate::console::c;
     match kind {
-        "MAJOR" => ("🔴", "\x1b[1;31m"),
-        "MINOR" => ("🟡", "\x1b[1;33m"),
-        "PATCH" => ("🟢", "\x1b[1;32m"),
-        _ => ("⚪", "\x1b[37m"),
+        "MAJOR" => ("🔴", c("\x1b[1;31m")),
+        "MINOR" => ("🟡", c("\x1b[1;33m")),
+        "PATCH" => ("🟢", c("\x1b[1;32m")),
+        _ => ("⚪", c("\x1b[37m")),
     }
 }
 
