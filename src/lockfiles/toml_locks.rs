@@ -32,20 +32,3 @@ pub fn parse_cargo_lock(dir: &Path, out: &mut Vec<LockEntry>) {
 pub fn parse_uv_lock(dir: &Path, out: &mut Vec<LockEntry>) {
     parse_toml_packages(&dir.join("uv.lock"), "PyPI", false, out);
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn skips_git_and_path_sources() {
-        let dir = std::env::temp_dir().join(format!("sentinel-lock-{}", std::process::id()));
-        let _ = fs::create_dir_all(&dir);
-        let sample = "[[package]]\nname = \"serde\"\nversion = \"1.0.200\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\n\n[[package]]\nname = \"time\"\nversion = \"0.1.44\"\nsource = \"git+https://github.com/example/time#abc\"\n\n[[package]]\nname = \"local\"\nversion = \"0.1.0\"\n";
-        let _ = fs::write(dir.join("Cargo.lock"), sample);
-        let mut out = Vec::new();
-        parse_cargo_lock(&dir, &mut out);
-        let _ = fs::remove_dir_all(&dir);
-        assert_eq!(out, vec![("crates.io", "serde".into(), "1.0.200".into())]);
-    }
-}

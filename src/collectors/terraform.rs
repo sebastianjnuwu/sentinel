@@ -3,7 +3,7 @@ use crate::version::{classify_update, clean_ver, is_newer};
 use serde_json::Value;
 use std::{fs, path::Path};
 
-fn parse_tf_lock(dir: &Path) -> Vec<(String, String)> {
+pub fn parse_tf_lock(dir: &Path) -> Vec<(String, String)> {
     let Ok(text) = fs::read_to_string(dir.join(".terraform.lock.hcl")) else { return Vec::new() };
     let (mut out, mut provider) = (Vec::new(), String::new());
     for line in text.lines() {

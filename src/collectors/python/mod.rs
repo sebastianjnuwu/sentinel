@@ -1,4 +1,4 @@
-mod parse;
+pub mod parse;
 
 use crate::lockfiles::locked_versions;
 use crate::types::{OutdatedPkg, ProjectScan};

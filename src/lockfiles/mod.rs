@@ -2,7 +2,6 @@ pub mod extra;
 pub mod go;
 pub mod misc;
 pub mod npm;
-#[cfg(test)] mod tests;
 pub mod toml_locks;
 
 pub use crate::types::LockEntry;

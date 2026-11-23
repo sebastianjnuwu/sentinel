@@ -1,8 +1,6 @@
-mod gradle;
-mod maven;
+pub mod gradle;
+pub mod maven;
 mod pom_ctx;
-#[cfg(test)]
-mod tests;
 
 use crate::lockfiles::LockEntry;
 use crate::types::OutdatedPkg;

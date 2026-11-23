@@ -1,6 +1,6 @@
 use std::{collections::HashSet, fs, path::Path};
 
-pub(super) fn parse_tag(tag: &str) -> Option<(String, String)> {
+pub fn parse_tag(tag: &str) -> Option<(String, String)> {
     let (v, s) = match tag.find('-') { Some(i) => (&tag[..i], &tag[i..]), None => (tag, "") };
     crate::version::is_numeric_ver(v).then(|| (v.to_string(), s.to_string()))
 }
@@ -15,7 +15,7 @@ fn normalize_repo(raw_repo: &str, raw_img: &str) -> Option<String> {
     Some(repo.to_string())
 }
 
-pub(super) fn extract_images(dir: &Path) -> Vec<(String, String)> {
+pub fn extract_images(dir: &Path) -> Vec<(String, String)> {
     let (mut seen, mut out) = (HashSet::new(), Vec::new());
     for file in ["Dockerfile", "docker-compose.yml", "docker-compose.yaml"] {
         let Ok(text) = fs::read_to_string(dir.join(file)) else { continue };

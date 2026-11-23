@@ -43,21 +43,3 @@ pub fn classify_update(current: &str, latest: &str) -> String {
         "UPDATE".into()
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn cleans_and_classifies() {
-        assert_eq!(clean_ver("^1.2.3"), "1.2.3");
-        assert_eq!(clean_ver("v2.0.1"), "2.0.1");
-        assert_eq!(classify_update("1.2.3", "2.0.0"), "MAJOR");
-        assert_eq!(classify_update("0.26.1", "0.36.1"), "MAJOR");
-        assert_eq!(classify_update("1.2.3", "1.3.0"), "MINOR");
-        assert_eq!(classify_update("1.2.3", "1.2.4"), "PATCH");
-        assert!(is_newer("1.2.3", "1.2.4"));
-        assert!(!is_newer("3.54.1.0", "3.49.1.0"));
-        assert!(!is_newer("20260814", "20250517"));
-    }
-}

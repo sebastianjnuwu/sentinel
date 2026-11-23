@@ -1,6 +1,4 @@
 pub mod license;
-#[cfg(test)]
-mod tests;
 
 pub use license::is_denied_license;
 use std::{fs, path::Path};

@@ -19,18 +19,3 @@ pub fn is_denied_license(license: &str, denied: &[String]) -> bool {
                 .any(|tok| tok == &dn || tok.starts_with(&format!("{dn}-")))
     })
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn matches_exact_spdx_without_false_positives() {
-        let deny = vec!["GPL".to_string(), "MIT".to_string()];
-        assert!(is_denied_license("GPL-3.0-only", &deny));
-        assert!(is_denied_license("MIT OR Apache-2.0", &deny));
-        assert!(!is_denied_license("LGPL-2.1", &["GPL".into()]));
-        assert!(!is_denied_license("AGPL-3.0", &["GPL".into()]));
-        assert!(!is_denied_license("Apache-2.0", &deny));
-    }
-}

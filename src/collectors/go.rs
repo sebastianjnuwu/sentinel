@@ -54,17 +54,3 @@ pub fn collect(dir: &Path) -> Vec<OutdatedPkg> {
         })
     })
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    #[test]
-    fn respects_version_pinned_replace() {
-        let dir = std::env::temp_dir().join(format!("sentinel-go-{}", std::process::id()));
-        let _ = fs::create_dir_all(&dir);
-        let _ = fs::write(dir.join("go.mod"), "module t\nrequire example.com/a v2.0.0\nreplace example.com/a v1.0.0 => ./local\n");
-        let deps = parse_go_direct(&dir);
-        let _ = fs::remove_dir_all(&dir);
-        assert_eq!(deps, vec![("example.com/a".into(), "2.0.0".into())]);
-    }
-}

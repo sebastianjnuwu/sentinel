@@ -1,4 +1,4 @@
-mod parse;
+pub mod parse;
 mod sbom;
 
 use crate::types::OutdatedPkg;
