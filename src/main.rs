@@ -1,20 +1,4 @@
-mod cache;
-mod cli;
-mod cmd;
-mod collectors;
-mod config;
-mod console;
-mod discover;
-mod http;
-mod lockfiles;
-mod osv;
-mod output;
-mod pool;
-mod scan;
-mod types;
-mod update;
-mod version;
-
+use sentinel_scan::{cache, cli, config, console, discover, osv, output, scan, update};
 use std::time::Instant;
 
 fn main() {
