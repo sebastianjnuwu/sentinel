@@ -73,7 +73,7 @@
 | ⚡ **Elixir** (`hex`) | `mix.exs` | `mix.lock` | ✅ | ✅ |
 | 🍎 **Swift / iOS** (`swiftpm`) | `Package.resolved` | — | — | ✅ |
 | 🧱 **Terraform** | `.terraform.lock.hcl` | — | — | — |
-| 🐳 **Docker** | `Dockerfile`, `docker-compose.yml` | — | — | — |
+| 🐳 **Docker** | `Dockerfile`, `docker-compose.yml` | — | — | ✅ |
 | 🐙 **GitHub Actions** | `.github/workflows/*.yml` | — | — | ✅ |
 
 ---

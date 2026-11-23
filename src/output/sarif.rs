@@ -14,6 +14,7 @@ fn manifest_file(manager: &str) -> &'static str {
         "hex" | "Hex" => "mix.exs",
         "pip" | "uv" | "PyPI" => "pyproject.toml",
         "swiftpm" | "SwiftURL" => "Package.resolved",
+        "docker" | "Docker" => "Dockerfile",
         _ => "package.json",
     }
 }

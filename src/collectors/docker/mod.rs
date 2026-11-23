@@ -1,4 +1,5 @@
 mod parse;
+mod sbom;
 
 use crate::types::OutdatedPkg;
 use crate::version::{classify_update, parse_semver_tuple};
@@ -32,10 +33,11 @@ pub fn collect(dir: &Path) -> Vec<OutdatedPkg> {
         let (cv, sfx) = parse::parse_tag(tag)?;
         let lat_tag = latest_hub_tag(repo, &cv, &sfx)?;
         let (lv, _) = parse::parse_tag(&lat_tag)?;
+        let cves = sbom::image_cves(repo, tag);
         Some(OutdatedPkg {
             manager: "docker".into(), name: repo.clone(),
             kind: classify_update(&cv, &lv), current: tag.clone(),
-            latest: lat_tag, license: "-".into(), cves: Vec::new(),
+            latest: lat_tag, license: "-".into(), cves,
         })
     })
 }

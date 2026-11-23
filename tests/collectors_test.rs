@@ -38,7 +38,9 @@ fn docker_handles_docker_io_digest_and_warns_unsupported() {
     assert!(err.contains("ghcr.io/org/app:1.2.3"));
     assert!(err.contains("node:latest"));
     let v = json(&out);
-    assert_eq!(v["outdated"].as_object().unwrap().values().next().unwrap()[0]["name"], "library/nginx");
+    let item = &v["outdated"].as_object().unwrap().values().next().unwrap()[0];
+    assert_eq!(item["name"], "library/nginx");
+    assert!(!item["cves"].as_array().unwrap().is_empty());
 }
 
 #[test]
