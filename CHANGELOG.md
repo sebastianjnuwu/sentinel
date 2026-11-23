@@ -2,6 +2,12 @@
 
 All notable changes to **Sentinel** will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+- The binary now consumes the `sentinel-scan` library target instead of declaring
+  its own copy of the modules, so the crate is compiled once. No behavior change.
+
 ## [1.0.1] - 2026-11-22
 
 ### Added
