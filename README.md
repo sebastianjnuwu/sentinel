@@ -137,6 +137,7 @@ sentinel --sarif /path/to/workspace > sentinel.sarif
 | `--fail-on-major` | Exit with code `1` if any `MAJOR` update is found |
 | `--depth <N>` | Maximum recursive directory depth (default: `3`) |
 | `--no-cache` | Bypass the 15-minute local registry & OSV cache |
+| `-u`, `--update` | Download and install the latest Sentinel release |
 | `-V`, `--version` | Print version |
 | `-h`, `--help` | Print help |
 
@@ -156,6 +157,7 @@ Create an optional `sentinel.toml` in your project or workspace root:
 ignore_packages = ["legacy-pkg", "ureq"]
 ignore_dirs = ["examples", "fixtures"]
 deny_licenses = ["GPL", "AGPL"]
+check_updates = true   # set to false to disable background update check
 ```
 
 ---

@@ -12,7 +12,7 @@ fn prints_version_and_help() {
     let h = run(&["--help"]);
     assert!(h.status.success());
     let s = String::from_utf8_lossy(&h.stdout);
-    for flag in ["--json", "--sarif", "--fail-on-cve", "--fail-on-major", "--depth", "--no-cache"] {
+    for flag in ["--json", "--sarif", "--fail-on-cve", "--fail-on-major", "--depth", "--no-cache", "--update"] {
         assert!(s.contains(flag), "missing {flag}");
     }
 }

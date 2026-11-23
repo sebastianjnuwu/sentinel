@@ -26,6 +26,10 @@ pub fn parse() -> CliOpts {
         match args[i].as_str() {
             "-h" | "--help" => { print_help(); process::exit(0); }
             "-V" | "--version" => { println!("sentinel {}", env!("CARGO_PKG_VERSION")); process::exit(0); }
+            "-u" | "--update" => {
+                if let Err(e) = crate::update::run_self_update() { die(&e); }
+                process::exit(0);
+            }
             "--json" => o.json = true,
             "--sarif" => o.sarif = true,
             "--fail-on-cve" => o.fail_on_cve = true,
@@ -58,6 +62,7 @@ fn print_help() {
     println!("  --fail-on-major   Exit with code 1 if any MAJOR update is found");
     println!("  --depth <N>       Max directory scan depth (default: 3)");
     println!("  --no-cache        Bypass 15-min local registry cache");
+    println!("  -u, --update      Download and install the latest Sentinel release");
     println!("  -V, --version     Print version");
     println!("  -h, --help        Print help");
 }
