@@ -1,32 +1,17 @@
 mod install;
 
 use crate::version::{clean_ver, is_newer};
-use std::time::Duration;
+use std::{io::{self, Write}, time::Duration};
 use ureq::Agent;
 
 const LATEST_URL: &str = "https://github.com/sebastianjnuwu/sentinel/releases/latest";
 
 fn resolve_latest_tag() -> Result<String, String> {
-    let agent: Agent = Agent::config_builder()
-        .max_redirects(0)
-        .timeout_global(Some(Duration::from_secs(10)))
-        .build()
-        .into();
-    let resp = agent
-        .get(LATEST_URL)
-        .header("User-Agent", crate::http::user_agent())
-        .call()
+    let agent: Agent = Agent::config_builder().max_redirects(0).timeout_global(Some(Duration::from_secs(10))).build().into();
+    let resp = agent.get(LATEST_URL).header("User-Agent", crate::http::user_agent()).call()
         .map_err(|e| format!("failed to check releases: {e}"))?;
-    let loc = resp
-        .headers()
-        .get("location")
-        .and_then(|v| v.to_str().ok())
-        .ok_or_else(|| "no releases found yet".to_string())?;
-    loc.rsplit('/')
-        .next()
-        .filter(|t| !t.is_empty() && *t != "releases")
-        .map(String::from)
-        .ok_or_else(|| "no releases found yet".to_string())
+    let loc = resp.headers().get("location").and_then(|v| v.to_str().ok()).ok_or("no releases found yet")?;
+    loc.rsplit('/').next().filter(|t| !t.is_empty() && *t != "releases").map(String::from).ok_or_else(|| "no releases found yet".into())
 }
 
 pub fn fetch_latest_tag() -> Option<String> {
@@ -41,20 +26,29 @@ pub fn fetch_latest_tag() -> Option<String> {
 
 pub fn maybe_print_notice(latest: Option<String>) {
     let Some(lat_tag) = latest else { return };
-    let cur = env!("CARGO_PKG_VERSION");
-    let lat = clean_ver(&lat_tag);
+    let (cur, lat) = (env!("CARGO_PKG_VERSION"), clean_ver(&lat_tag));
     if is_newer(cur, &lat) {
         let (yel, cyan, rst) = (crate::console::c("\x1b[1;33m"), crate::console::c("\x1b[36m"), crate::console::c("\x1b[0m"));
         println!("⬆️  {yel}New Sentinel version available:{rst} v{cur} → v{lat} {cyan}(run 'sentinel -u' to update){rst}");
     }
 }
 
+fn confirm(cur: &str, lat: &str) -> bool {
+    print!("Update Sentinel v{cur} → v{lat}? [y/N]: ");
+    let _ = io::stdout().flush();
+    let mut ans = String::new();
+    io::stdin().read_line(&mut ans).is_ok() && matches!(ans.trim().to_ascii_lowercase().as_str(), "y" | "yes")
+}
+
 pub fn run_self_update() -> Result<(), String> {
     let tag = resolve_latest_tag()?;
-    let cur = env!("CARGO_PKG_VERSION");
-    let lat = clean_ver(&tag);
+    let (cur, lat) = (env!("CARGO_PKG_VERSION"), clean_ver(&tag));
     if !is_newer(cur, &lat) {
         println!("✅ Sentinel is already up to date (v{cur}).");
+        return Ok(());
+    }
+    if !confirm(cur, &lat) {
+        println!("Update cancelled.");
         return Ok(());
     }
     println!("⬇️  Updating Sentinel v{cur} → v{lat}...");
