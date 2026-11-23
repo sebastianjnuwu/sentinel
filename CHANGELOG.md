@@ -8,6 +8,11 @@ All notable changes to **Sentinel** will be documented in this file.
 - The binary now consumes the `sentinel-scan` library target instead of declaring
   its own copy of the modules, so the crate is compiled once. No behavior change.
 
+### Security
+- Bumped the transitive `cookie` crate from `0.18.2` to `0.18.3`, fixing
+  [RUSTSEC-2026-0594](https://rustsec.org/advisories/RUSTSEC-2026-0594.html)
+  (`cookie` via `ureq` -> `cookie_store`). Lockfile-only change; no API impact.
+
 ## [1.0.1] - 2026-11-22
 
 ### Added
